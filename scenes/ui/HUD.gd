@@ -12,9 +12,9 @@ class_name HUD
 @onready var tween := create_tween()
 
 func _ready():
-	player.connect("hp_changed", _on_hp_changed)
-	player.connect("dash_cooldown_updated", _on_dash_cooldown_updated)
-	update_hearts(player.current_hp)  # initialize
+	#player.connect("hp_changed", _on_hp_changed)
+	#player.connect("dash_cooldown_updated", _on_dash_cooldown_updated)
+	#update_hearts(player.current_hp)  # initialize
 	$GameUi.visible = false
 	$EndScreen.visible = false
 	
@@ -23,8 +23,8 @@ func _on_hp_changed(current_hp: int):
 	hp_label.text = "HP: %d" % current_hp
 	update_hearts(current_hp)
 
-func _on_dash_cooldown_updated(percent_ready: float):
-	dash_bar.value = percent_ready * 100.0
+#func _on_dash_cooldown_updated(percent_ready: float):
+	#dash_bar.value = percent_ready * 100.0
 
 
 func update_hearts(current_hp: int):

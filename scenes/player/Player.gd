@@ -79,6 +79,10 @@ signal hp_changed(current_hp: int)
 signal dash_cooldown_updated(percent_ready: float)
 signal player_died
 
+func _enter_tree():
+	set_multiplayer_authority(name.to_int())
+
+
 func _ready():
 	target_position = global_position
 	reticle.visible = true
@@ -112,6 +116,10 @@ func _setup_dash_dial():
 
 
 func _process(delta):
+	if !is_multiplayer_authority():
+		return 
+		
+		
 	if is_hit_paused:
 		return
 		
