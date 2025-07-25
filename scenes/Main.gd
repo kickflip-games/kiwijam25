@@ -10,6 +10,8 @@ enum GameState {
 var current_state = GameState.START_SCREEN
 var game_timer: float = 0.0
 var is_timer_running: bool = false
+var peer = ENetMultiplayerPeer.new()
+@export var player_scene: PackedScene
 
 # UI references
 @onready var start_screen = $HUD/StartScreen
@@ -17,14 +19,12 @@ var is_timer_running: bool = false
 @onready var game_ui = $HUD/GameUi
 @onready var start_button = $HUD/StartScreen/StartButton
 @onready var restart_button = $HUD/EndScreen/RestartButton
-@onready var player = $Player
 
 
 func _ready():
 	# Connect button signals
 	start_button.pressed.connect(_on_start_button_pressed)
 	restart_button.pressed.connect(_on_restart_button_pressed)
-	player.player_died.connect(player_died)
 	
 	# Initialize screens
 	show_start_screen()
@@ -93,6 +93,10 @@ func _on_start_button_pressed():
 func _on_restart_button_pressed():
 	get_tree().reload_current_scene()
 
-# Call this when player dies
-func player_died():
-	show_game_over()
+
+func _on_host_button_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_join_button_pressed() -> void:
+	pass # Replace with function body.
