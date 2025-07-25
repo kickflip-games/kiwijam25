@@ -21,14 +21,14 @@ extends Node2D
 # --- Turn effects ---
 @export var sharp_turn_threshold := 2.0
 @export var turn_fx_duration := 0.3
-@export var curved_trail_segments := 8  # Number of segments for curved trails
+@export var curved_trail_segments := 8
 
 # --- Juice FX ---
-@export var hit_pause_duration := 0.08  # Hit pause duration
+@export var hit_pause_duration := 0.08
 @export var dash_bloom_intensity := 1.8
 @export var dash_trail_fade_duration := 0.2
 @export var idle_pulse_speed := 2.0
-@export var dash_dial_radius := 40.0  # Distance from player center
+@export var dash_dial_radius := 40.0
 
 # --- State ---
 var velocity := Vector2.ZERO
@@ -44,21 +44,56 @@ var dash_timer := 0.0
 var dash_cooldown_timer := 0.0
 var dash_direction := Vector2.ZERO
 var target_position := Vector2.ZERO
-var velocity_history: Array[Vector2] = []  # For curved trails
-
-# --- Trail system ---
-var dash_trail_points: Array = []
-var max_trail_points := 15
-var movement_trail_points: Array = []
-var max_movement_trail_points := 20
-var dash_trail_tween: Tween
-var dash_trail_active = false
-var turn_trail_points_left = []
-var turn_trail_points_right = []
-var max_turn_trail_points = 20  # Adjust as needed
+var velocity_history: Array[Vector2] = []
 var is_sharp_turning = false
-var turn_trail_fade_speed = 1.0  # Adjust fade speed
 
+# --- Trail System ---
+class Trail:
+	var points: Array = []
+	var line: Line2D
+	var max_points: int
+	var fade_speed: float
+	var tween: Tween
+	var is_fading: bool = false
+	
+	func _init(line_node: Line2D, max_pts: int, fade_spd: float = 1.0):
+		line = line_node
+		max_points = max_pts
+		fade_speed = fade_spd
+	
+	func add_point(point: Vector2, player: Node2D):
+		points.append(point)
+		if points.size() > max_points:
+			points.pop_front()
+		update_visual(player)
+	
+	func update_visual(player: Node2D):
+		line.clear_points()
+		for point in points:
+			line.add_point(player.to_local(point))
+		line.visible = points.size() > 0
+	
+	func clear():
+		points.clear()
+		line.clear_points()
+		line.visible = false
+	
+	func start_fade(player: Node2D):
+		if is_fading:
+			return
+		
+		is_fading = true
+		tween = player.create_tween()
+		tween.finished.connect(_on_fade_complete)
+		tween.tween_property(line, "modulate:a", 0.0, fade_speed)
+	
+	func _on_fade_complete():
+		line.visible = false
+		line.modulate.a = 1.0
+		clear()
+		is_fading = false
+
+var trails: Dictionary = {}
 
 # --- Nodes ---
 @onready var sprite: Sprite2D = $Sprite2D
@@ -82,7 +117,6 @@ signal player_died
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
 
-
 func _ready():
 	target_position = global_position
 	reticle.visible = true
@@ -91,47 +125,36 @@ func _ready():
 	emit_signal("hp_changed", current_hp)
 	last_rotation = rotation
 	
-	#_setup_movement_trail()
 	_setup_dash_dial()
+	_setup_trails()
+
+func _setup_trails():
+	trails["dash"] = Trail.new(dash_trail, 15, dash_trail_fade_duration)
+	trails["movement"] = Trail.new(movement_trail, 20, 1.0)
+	trails["turn_left"] = Trail.new(turn_fx_left, 10, 1.0)
+	trails["turn_right"] = Trail.new(turn_fx_right, 10, 1.0)
 	
-
-
-
-
-func _setup_movement_trail():
-	movement_trail.width = 2.0
+	# Setup trail properties
+	movement_trail.width = 24.18
 	movement_trail.default_color = Color(1.0, 1.0, 1.0, 0.7)
-	movement_trail.visible = true
 
 func _setup_dash_dial():
-	# Background circle (full circle)
 	dash_dial_bg.width = 3.0
 	dash_dial_bg.default_color = Color(0.3, 0.3, 0.3, 0.5)
 	_create_circle_points(dash_dial_bg, dash_dial_radius, 32)
 	
-	# Progress arc
 	dash_dial.width = 4.0
 	dash_dial.default_color = Color(0.2, 0.8, 1.0, 0.8)
 
-
-
 func _process(delta):
-	if !is_multiplayer_authority():
-		return 
-		
-		
-	if is_hit_paused:
+	if !is_multiplayer_authority() or is_hit_paused:
 		return
 		
-	# Track velocity for curved trails
-	velocity_history.append(velocity)
-	if velocity_history.size() > 10:
-		velocity_history.pop_front()
+	_update_velocity_history()
 	
-	# Update dash timers and movement
 	if is_dashing:
 		_handle_dash_movement(delta)
-		_update_dash_trail()
+		trails["dash"].add_point(global_position, self)
 		_apply_dash_bloom_effect()
 		dash_timer -= delta
 		if dash_timer <= 0:
@@ -141,15 +164,17 @@ func _process(delta):
 		_apply_momentum_movement(delta)
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		
-		_update_movement_trail()
+		trails["movement"].add_point(global_position, self)
 		_update_movement_particles()
 
-	# Update all visual effects
-	#_update_turn_effects(delta)
 	_update_reticle(delta)
 	_update_dash_dial()
-	#_update_idle_pulse(delta)
 	emit_signal("dash_cooldown_updated", _get_dash_percent_ready())
+
+func _update_velocity_history():
+	velocity_history.append(velocity)
+	if velocity_history.size() > 10:
+		velocity_history.pop_front()
 
 func _input(event):
 	if event.is_action_pressed("dash") and can_dash():
@@ -161,14 +186,12 @@ func trigger_hit_pause():
 		return
 		
 	is_hit_paused = true
-	Engine.time_scale = 0.1  # Slow down time dramatically
+	Engine.time_scale = 0.1
 	
-	# Visual impact effect
 	var impact_tween = create_tween()
 	impact_tween.tween_property(sprite, "scale", Vector2(1.3, 0.7), hit_pause_duration * 0.3)
 	impact_tween.tween_property(sprite, "scale", Vector2.ONE, hit_pause_duration * 0.7)
 	
-	# Resume normal time after pause
 	await get_tree().create_timer(hit_pause_duration * Engine.time_scale).timeout
 	Engine.time_scale = 1.0
 	is_hit_paused = false
@@ -183,21 +206,17 @@ func start_dash():
 	dash_cooldown_timer = dash_cooldown
 	dash_direction = (target_position - global_position).normalized()
 	
-	# Reset and show trail
-	dash_trail_points.clear()
+	trails["dash"].clear()
 	dash_trail.visible = true
 	
-	# Enhanced visual impact
 	sprite.modulate = Color(dash_bloom_intensity, dash_bloom_intensity, dash_bloom_intensity + 0.3, 0.9)
 	sprite.scale = Vector2(1.3, 0.7)
 	
-	# Particle burst
 	dash_particles.emitting = true
 	if movement_particles:
-		movement_particles.emitting = false  # Stop movement particles during dash
+		movement_particles.emitting = false
 
 func _apply_dash_bloom_effect():
-	# Pulsing bloom effect during dash
 	var pulse = sin(Time.get_ticks_msec() * 0.02) * 0.2 + 1.0
 	sprite.modulate = Color(dash_bloom_intensity * pulse, dash_bloom_intensity * pulse, 
 						   (dash_bloom_intensity + 0.3) * pulse, 0.9)
@@ -215,21 +234,17 @@ func _handle_dash_movement(delta):
 func end_dash():
 	is_dashing = false
 	
-	# Smooth return to normal
 	var end_tween = create_tween()
 	end_tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.2)
 	end_tween.parallel().tween_property(sprite, "scale", Vector2.ONE, 0.2)
 	
 	dash_particles.emitting = false
 	
-	# Resume movement particles
 	if movement_particles:
 		movement_particles.emitting = true
 	
-	# Add velocity for smooth transition
 	velocity += dash_direction * 200.0
-
-	start_dash_trail_fade()
+	trails["dash"].start_fade(self)
 
 # --- Enhanced Movement System ---
 func _handle_mouse_input():
@@ -270,7 +285,6 @@ func _handle_circling_movement(delta):
 	if velocity.length() > circle_speed:
 		velocity = velocity.normalized() * circle_speed
 
-
 func _handle_rotation_and_turns(delta):
 	if velocity.length() > 2.0:
 		var target_rotation = velocity.angle()
@@ -281,33 +295,24 @@ func _handle_rotation_and_turns(delta):
 		
 		if turn_speed > sharp_turn_threshold:
 			if !is_sharp_turning:
-				# Just started sharp turning - reset trails
 				is_sharp_turning = true
-				turn_trail_points_left.clear()
-				turn_trail_points_right.clear()
+				trails["turn_left"].clear()
+				trails["turn_right"].clear()
 			
-			
-			update_turn_trail_right()
-			update_turn_trail_left()
-				
+			trails["turn_left"].add_point(global_position, self)
+			trails["turn_right"].add_point(global_position, self)
 		else:
 			if is_sharp_turning:
-				# Just stopped sharp turning - start fade
 				is_sharp_turning = false
-				start_turn_trails_fade()
+				trails["turn_left"].start_fade(self)
+				trails["turn_right"].start_fade(self)
 		
 		last_rotation = rotation
-
-
-# --- Movement Trail System ---
-
-
 
 func _update_movement_particles():
 	if movement_particles:
 		if velocity.length() > 30.0:
 			movement_particles.emitting = true
-			# Adjust particle direction based on movement
 			movement_particles.process_material.direction = Vector3(-velocity.normalized().x, -velocity.normalized().y, 0)
 		else:
 			movement_particles.emitting = false
@@ -318,17 +323,15 @@ func _update_dash_dial():
 	dash_dial.clear_points()
 	
 	if dash_percent < 1.0:
-		# Create arc based on cooldown progress
 		var arc_angle = dash_percent * TAU
 		_create_arc_points(dash_dial, dash_dial_radius, arc_angle, 24)
 		dash_dial.visible = true
 		dash_dial_bg.visible = true
 		
-		# Color based on readiness
 		if dash_percent > 0.8:
-			dash_dial.default_color = Color(0.2, 1.0, 0.3, 0.9)  # Green when ready
+			dash_dial.default_color = Color(0.2, 1.0, 0.3, 0.9)
 		else:
-			dash_dial.default_color = Color(1.0, 0.5, 0.2, 0.7)  # Orange when charging
+			dash_dial.default_color = Color(1.0, 0.5, 0.2, 0.7)
 	else:
 		dash_dial.visible = false
 		dash_dial_bg.visible = false
@@ -345,11 +348,9 @@ func _create_arc_points(line: Line2D, radius: float, end_angle: float, segments:
 	var actual_segments = int(segments * (end_angle / TAU))
 	
 	for i in range(actual_segments + 1):
-		var angle = (float(i) / float(segments)) * end_angle - PI/2  # Start from top
+		var angle = (float(i) / float(segments)) * end_angle - PI/2
 		var point = Vector2(cos(angle), sin(angle)) * radius
 		line.add_point(point)
-
-
 
 func _update_reticle(delta):
 	reticle.global_position = target_position
@@ -366,9 +367,7 @@ func _on_body_entered(body: Node2D):
 	if is_dashing or is_invincible:
 		return
 	
-	# Trigger hit pause for impact
 	trigger_hit_pause()
-	
 	take_damage(1)
 	body.queue_free()
 
@@ -385,7 +384,6 @@ func take_damage(amount: int):
 func become_invincible():
 	is_invincible = true
 	
-	# Enhanced flashing with color shift
 	var tween = create_tween().set_loops(int(invincibility_duration * 6))
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.tween_property(sprite, "modulate", Color(1.5, 0.5, 0.5, 0.4), invincibility_duration / 12)
@@ -397,7 +395,6 @@ func become_invincible():
 
 func die():
 	print("Player has died")
-	# Death effect before destruction
 	player_died.emit()
 	
 	var death_tween = create_tween()
@@ -406,102 +403,3 @@ func die():
 	await death_tween.finished
 	
 	queue_free()
-
-
-
-
-##### TRAILS
-## PLEASE CLEAN UP -- lots of shitty duplicated code... 
-
-
-func update_turn_trail_left():
-	turn_trail_points_left.append(global_position)
-	if turn_trail_points_left.size() > max_turn_trail_points:
-		turn_trail_points_left.pop_front()
-	
-	turn_fx_left.clear_points()
-	turn_fx_left.visible = true
-	
-	# Add all points
-	for point in turn_trail_points_left:
-		turn_fx_left.add_point(to_local(point))
-
-
-func update_turn_trail_right():
-	turn_trail_points_right.append(global_position)
-	if turn_trail_points_right.size() > max_turn_trail_points:
-		turn_trail_points_right.pop_front()
-	
-	turn_fx_right.clear_points()
-	turn_fx_right.visible = true
-	
-	# Add all points
-	for point in turn_trail_points_right:
-		turn_fx_right.add_point(to_local(point))
-
-
-func start_turn_trails_fade():
-	# Fade both trails
-	var left_tween = create_tween()
-	var right_tween = create_tween()
-	
-	left_tween.tween_property(turn_fx_left, "modulate:a", 0.0, turn_trail_fade_speed)
-	right_tween.tween_property(turn_fx_right, "modulate:a", 0.0, turn_trail_fade_speed)
-	
-	left_tween.finished.connect(_on_turn_trail_fade_complete.bind("left"))
-	right_tween.finished.connect(_on_turn_trail_fade_complete.bind("right"))
-
-func _on_turn_trail_fade_complete(side: String):
-	if side == "left":
-		turn_fx_left.visible = false
-		turn_fx_left.modulate.a = 1.0
-		turn_trail_points_left.clear()
-	else:
-		turn_fx_right.visible = false
-		turn_fx_right.modulate.a = 1.0
-		turn_trail_points_right.clear()
-
-
-
-
-func _update_dash_trail():
-	dash_trail_points.append(global_position)
-	if dash_trail_points.size() > max_trail_points:
-		dash_trail_points.pop_front()
-	
-	dash_trail.clear_points()
-	
-	# Add all points first
-	for point in dash_trail_points:
-		dash_trail.add_point(to_local(point))
-	
-	
-	
-func start_dash_trail_fade():
-	if dash_trail_active:
-		return
-	
-	dash_trail_tween = create_tween()
-	dash_trail_tween.finished.connect(_on_dash_trail_fade_complete)
-	
-	dash_trail_active = true
-	# Tween the entire trail's modulate alpha from 1.0 to 0.0
-	dash_trail_tween.tween_property(dash_trail, "modulate:a", 0.0, dash_trail_fade_duration)
-
-func _on_dash_trail_fade_complete():
-	dash_trail.visible = false
-	dash_trail.modulate.a = 1.0  # Reset for next time
-	dash_trail_points.clear()
-	dash_trail_active = false
-	
-func _update_movement_trail():
-	movement_trail_points.append(global_position)
-	if movement_trail_points.size() > max_movement_trail_points:
-		movement_trail_points.pop_front()
-	
-	movement_trail.visible = true
-	movement_trail.clear_points()
-	
-	# Add all points first
-	for point in movement_trail_points:
-		movement_trail.add_point(to_local(point))
