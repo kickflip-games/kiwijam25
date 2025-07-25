@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+HighLevelNetworkHandler="*res://autoloads/high_level_network_handler.gd"
 CameraBounds="*res://autoloads/CameraBounds.gd"
 SceneManager="*res://autoloads/SceneManager.gd"
 GlobalSettings="*res://autoloads/GlobalSettings.gd"

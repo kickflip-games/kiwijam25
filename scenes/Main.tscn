@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://c7etnmicu136n"]
+[gd_scene load_steps=10 format=3 uid="uid://c7etnmicu136n"]
 
 [ext_resource type="PackedScene" uid="uid://dsmsb7kwv0ce1" path="res://managers/camera_2d.tscn" id="1_c01mt"]
 [ext_resource type="Script" uid="uid://cfeicvpmqto3f" path="res://scenes/Main.gd" id="1_jlsqs"]
 [ext_resource type="PackedScene" uid="uid://bulqqx1t7sun1" path="res://scenes/background/Background.tscn" id="1_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://corxhrleskgv" path="res://scenes/player/Player.tscn" id="3_c01mt"]
+[ext_resource type="PackedScene" uid="uid://c0qb6qs3taohy" path="res://scenes/networking/HighLevelUI.tscn" id="3_nxtc6"]
+[ext_resource type="Script" uid="uid://de3vrhq3v5don" path="res://scenes/networking/high_level_multiplayer_spawner.gd" id="4_jlsqs"]
 
 [sub_resource type="Environment" id="Environment_nxtc6"]
 glow_enabled = true
@@ -19,6 +21,12 @@ glow_hdr_threshold = 0.83
 script = ExtResource("1_jlsqs")
 player_scene = ExtResource("3_c01mt")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://corxhrleskgv")
+spawn_path = NodePath("..")
+script = ExtResource("4_jlsqs")
+network_player = ExtResource("3_c01mt")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_nxtc6")
 camera_attributes = SubResource("CameraAttributesPractical_jlsqs")
@@ -33,22 +41,6 @@ offset_bottom = 709.0
 [node name="Camera2D" parent="." instance=ExtResource("1_c01mt")]
 position = Vector2(576, 322)
 
-[node name="HostButton" type="Button" parent="."]
-offset_left = 1023.0
-offset_top = 553.0
-offset_right = 1102.0
-offset_bottom = 584.0
-text = "Host
-"
-
-[node name="JoinButton" type="Button" parent="."]
-offset_left = 1023.0
-offset_top = 588.0
-offset_right = 1102.0
-offset_bottom = 619.0
-text = "Join"
-
-[connection signal="pressed" from="HostButton" to="." method="_on_host_button_pressed"]
-[connection signal="pressed" from="JoinButton" to="." method="_on_join_button_pressed"]
+[node name="HighLevelUi" parent="." instance=ExtResource("3_nxtc6")]
 
 [editable path="Background"]
