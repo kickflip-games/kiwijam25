@@ -1,0 +1,46 @@
+[gd_scene load_steps=11 format=3 uid="uid://c7etnmicu136n"]
+
+[ext_resource type="PackedScene" uid="uid://dsmsb7kwv0ce1" path="res://managers/camera_2d.tscn" id="1_c01mt"]
+[ext_resource type="Script" uid="uid://cfeicvpmqto3f" path="res://scenes/Main.gd" id="1_jlsqs"]
+[ext_resource type="PackedScene" uid="uid://bulqqx1t7sun1" path="res://scenes/background/Background.tscn" id="1_nxtc6"]
+[ext_resource type="PackedScene" uid="uid://corxhrleskgv" path="res://scenes/player/Player.tscn" id="3_c01mt"]
+[ext_resource type="PackedScene" uid="uid://bib5lohuq1xli" path="res://scenes/ui/HUD.tscn" id="4_rarhs"]
+[ext_resource type="Texture2D" uid="uid://blmdh84m208op" path="res://assets/textures/heart/heart_full.png" id="5_c01mt"]
+[ext_resource type="Texture2D" uid="uid://48kbqnmj1mpn" path="res://assets/textures/heart/heart_empty.png" id="6_nxtc6"]
+
+[sub_resource type="Environment" id="Environment_nxtc6"]
+glow_enabled = true
+glow_intensity = 1.2
+glow_bloom = 0.38
+glow_hdr_threshold = 0.83
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jlsqs"]
+
+[sub_resource type="Compositor" id="Compositor_q8u5g"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_jlsqs")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_nxtc6")
+camera_attributes = SubResource("CameraAttributesPractical_jlsqs")
+compositor = SubResource("Compositor_q8u5g")
+
+[node name="Background" parent="." instance=ExtResource("1_nxtc6")]
+offset_left = -60.0
+offset_top = -84.0
+offset_right = 1207.0
+offset_bottom = 709.0
+
+[node name="Camera2D" parent="." instance=ExtResource("1_c01mt")]
+position = Vector2(576, 322)
+
+[node name="Player" parent="." instance=ExtResource("3_c01mt")]
+position = Vector2(586, 276)
+
+[node name="HUD" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_rarhs")]
+player = NodePath("../Player")
+heart_full_texture = ExtResource("5_c01mt")
+heart_empty_texture = ExtResource("6_nxtc6")
+
+[editable path="Background"]
