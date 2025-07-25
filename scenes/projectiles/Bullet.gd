@@ -32,6 +32,8 @@ func set_velocity(new_velocity: Vector2):
 	linear_velocity = velocity
 
 func _on_body_entered(body):
+	if !is_multiplayer_authority():
+		return
 	# Check if we hit the player
 	if body.has_method("take_damage"):
 		body.take_damage(damage)
