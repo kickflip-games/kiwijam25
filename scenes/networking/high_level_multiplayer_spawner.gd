@@ -8,10 +8,10 @@ func _ready() -> void:
 	multiplayer.peer_connected.connect(spawn_player)
 	multiplayer.peer_disconnected.connect(despawn_player)
 	
-	# If we're the server, spawn the server player
-	if multiplayer.is_server():
-		# Wait a frame to ensure everything is ready
-		call_deferred("spawn_server_player")
+	## If we're the server, spawn the server player
+	#if multiplayer.is_server():
+		#print("I AM SERVER, im spawning my child")
+		#call_deferred("spawn_server_player")
 
 func spawn_server_player() -> void:
 	spawn_player(1)  # Server always has ID 1

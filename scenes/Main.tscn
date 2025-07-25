@@ -19,7 +19,6 @@ glow_hdr_threshold = 0.83
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jlsqs")
-player_scene = ExtResource("3_c01mt")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://corxhrleskgv")
