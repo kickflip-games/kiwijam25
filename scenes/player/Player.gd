@@ -31,7 +31,7 @@ extends Node2D
 @export var dash_dial_radius := 40.0
 
 # --- Bullet -- 
-const Bullet = preload("res://scenes/projectiles/Bullet.tscn")
+const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
 
 # --- State ---
 var velocity := Vector2.ZERO
