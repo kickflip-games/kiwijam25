@@ -190,6 +190,10 @@ func _input(event):
 		start_dash()
 	if event.is_action_pressed("shoot"):
 		shoot.rpc(multiplayer.get_unique_id())
+	if event.is_action_pressed("pause_player"):
+		max_speed = 0.4
+		
+	
 
 # -- shooting --
 
