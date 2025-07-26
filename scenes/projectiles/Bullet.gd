@@ -34,7 +34,7 @@ func _on_body_entered(body):
 		return
 	# Check if we hit the player
 	if body.has_method("take_damage"):
-		body.take_damage(damage)
+		body.take_damage.rpc_id(body.get_multiplayer_authority(),25)
 		_destroy_bullet()
 	_destroy_bullet().rpc()
 	
