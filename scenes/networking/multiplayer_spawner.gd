@@ -1,7 +1,7 @@
 extends MultiplayerSpawner
-
 @export var network_player: PackedScene
 var spawned_players: Dictionary = {}
+
 
 func _ready() -> void:
 	# Connect signals first
@@ -22,18 +22,20 @@ func spawn_player(id: int) -> void:
 	
 	var player: Node = network_player.instantiate()
 	player.name = str(id)
+	var spawn_index = spawned_players.size() % 4
 	
-	# Set spawn position before adding to scene
-	var spawn_positions = [
-		Vector2(100, 100),
-		Vector2(-100, 100),
-		Vector2(100, -100),
-		Vector2(-100, -100)
-	]
-	var spawn_index = spawned_players.size() % spawn_positions.size()
-	player.global_position = spawn_positions[spawn_index]
+	# Create PlayerData
+	var pdata = PlayerData.new(id)
 	
-	# Add to scene first, then set authority
+	print("🎮 Creating player %d with position: %s, color: %s" % [id, pdata.spawn_position, pdata.color])
+	
+	# Initialize player BEFORE adding to scene
+	player._init_player(
+		pdata.spawn_position,
+		pdata.color
+	)
+	
+	# Add to scene
 	var parent: Node = get_node(spawn_path)
 	parent.add_child(player, true)  # Force readable name
 	
@@ -42,6 +44,7 @@ func spawn_player(id: int) -> void:
 	
 	# Track spawned players
 	spawned_players[id] = player
+	player.position = pdata.spawn_position
 	
 	print("✅ Spawned player %d at %s" % [id, player.global_position])
 

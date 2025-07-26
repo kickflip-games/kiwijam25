@@ -13,6 +13,9 @@ extends Node2D
 @export var max_hp := 3
 @export var invincibility_duration: float = 1.2
 
+@export var color: Color
+@export var spawn_point: Vector2
+
 # --- Circling behavior ---
 @export var circle_radius := 80.0
 @export var circle_speed := 300.0
@@ -29,6 +32,9 @@ extends Node2D
 @export var dash_trail_fade_duration := 0.2
 @export var idle_pulse_speed := 2.0
 @export var dash_dial_radius := 40.0
+
+
+@export var player_data:PlayerData
 
 # --- Bullet -- 
 const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
@@ -50,6 +56,7 @@ var dash_direction := Vector2.ZERO
 var target_position := Vector2.ZERO
 var velocity_history: Array[Vector2] = []
 var is_sharp_turning = false
+var is_initialized: bool = false
 
 @export var bullet_speed := 1000.0
 
@@ -117,17 +124,34 @@ var trails: Dictionary = {}
 @onready var dash_dial: Line2D = $DashDial
 @onready var dash_dial_bg: Line2D = $DashDialBG
 
+
+
+
+
+
 # --- Signals ---
 signal hp_changed(current_hp: int)
 signal score_changed(current_score:int)
 signal dash_cooldown_updated(percent_ready: float)
 signal player_died
 
+
+
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
 
 func _ready():
+	if !is_multiplayer_authority():
+		return
+	print("🔍 Player _ready() called - Node path: %s, Authority: %d" % [get_path(), get_multiplayer_authority()])
+	
+	print("In player ready")
+
+	#global_position = spawn_point
 	target_position = global_position
+	is_initialized = true
+	print("Player data found - position: %s, color: %s" % [global_position, color])
+		
 	reticle.visible = true
 	reticle.modulate.a = 0.5
 	collision_area.connect("body_entered", _on_body_entered)
@@ -136,6 +160,18 @@ func _ready():
 	
 	_setup_dash_dial()
 	_setup_trails()
+	_setup_colors()
+
+
+func _init_player(pos: Vector2, col:Color):
+	print("INIT PLAYER DATA - position: %s, color: %s" % [pos, col])
+	color = col
+	spawn_point = pos
+	is_initialized = true
+
+func _setup_colors():
+	$Sprite2D.modulate = color
+	$Reticle.modulate = color
 
 func _setup_trails():
 	trails["dash"] = Trail.new(dash_trail, 15, dash_trail_fade_duration)

@@ -3,31 +3,29 @@ extends Resource
 
 @export var player_id: int
 @export var player_name: String = ""
-@export var color: Color = Color.WHITE
-@export var spawn_position: Vector2 = Vector2.ZERO
+@export var color: Color
+@export var spawn_position: Vector2 
 @export var current_score: int = 0
 @export var deaths: int = 0
 
-func _init(id: int = 0, name: String = "", player_color: Color = Color.WHITE):
-	player_id = id
-	player_name = name if name != "" else "Player " + str(id)
-	color = player_color
 
-func to_dict() -> Dictionary:
-	return {
-		"player_id": player_id,
-		"player_name": player_name,
-		"color": color,
-		"spawn_position": spawn_position,
-		"current_score": current_score,
-		"is_connected": is_connected,
-		"deaths": deaths,
-	}
+@export var spawn_positions = [
+	Vector2(100, 500),
+	Vector2(-100, 500),
+	Vector2(100, 500),
+	Vector2(-100, 100)
+]
+@export var spawn_colors = [
+	Color(0.13, 0.941, 0.99, 1.0),
+	Color(0.367, 0.685, 0.128, 1.0),
+	Color(0.435, 0.845, 0.949, 1.0),  # Fixed: was > 1.0 values
+	Color(0.354, 0.906, 0.467, 1.0),  # Fixed: was > 1.0 values
+]
 
-func from_dict(data: Dictionary):
-	player_id = data.get("player_id", 0)
-	player_name = data.get("player_name", "")
-	color = data.get("color", Color.WHITE)
-	spawn_position = data.get("spawn_position", Vector2.ZERO)
-	current_score = data.get("current_score", 0)
-	deaths = data.get("deaths", 0)
+
+func _init(id: int = 0):
+	player_id = id % 4 
+	player_name =  "Player " + str(player_id)
+	color = spawn_colors[player_id]
+	spawn_position= spawn_positions[player_id]
+	

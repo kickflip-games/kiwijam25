@@ -7,8 +7,8 @@ extends Control
 @onready var hearts := $Hearts
 @onready var score_label:=$ScoreLabel
 
-@onready var heart_tween := create_tween()
-@onready var score_tween := create_tween()
+#@onready var heart_tween := create_tween()
+#@onready var score_tween := create_tween()
 
 var original_scale: Vector2
 var original_color: Color
@@ -17,19 +17,19 @@ var original_color: Color
 
 
 func _ready():
+	if not is_multiplayer_authority():
+		queue_free()
+		return  
+	
 	player.connect("hp_changed", _on_hp_changed)
 	player.connect("score_changed", _on_score_changed)
-	
 	
 	original_scale = score_label.scale
 	original_color = score_label.modulate
 	
 	_on_score_changed(0)
 	_on_hp_changed(player.current_hp)  # initialize
-	
 
-
-	
 
 func _on_hp_changed(current_hp: int):
 	for i in range(hearts.get_child_count()):
