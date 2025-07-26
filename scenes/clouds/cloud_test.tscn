@@ -1,3 +1,47 @@
-[gd_scene format=3 uid="uid://cdyyq2e6lb08m"]
+[gd_scene load_steps=10 format=3 uid="uid://cdyyq2e6lb08m"]
+
+[ext_resource type="Script" uid="uid://de3vrhq3v5don" path="res://scenes/networking/multiplayer_spawner.gd" id="1_pmd2w"]
+[ext_resource type="PackedScene" uid="uid://corxhrleskgv" path="res://scenes/player/Player.tscn" id="2_alrrd"]
+[ext_resource type="PackedScene" uid="uid://bulqqx1t7sun1" path="res://scenes/background/Background.tscn" id="3_0jeeu"]
+[ext_resource type="PackedScene" uid="uid://dsmsb7kwv0ce1" path="res://managers/camera_2d.tscn" id="4_1xsug"]
+[ext_resource type="PackedScene" uid="uid://c0qb6qs3taohy" path="res://scenes/networking/LobbyUI.tscn" id="5_i4pvw"]
+[ext_resource type="PackedScene" uid="uid://y47yilag0ulc" path="res://scenes/clouds/cloud_spanwer.tscn" id="6_ec71s"]
+
+[sub_resource type="Environment" id="Environment_eud8s"]
+glow_enabled = true
+glow_intensity = 1.2
+glow_bloom = 0.38
+glow_hdr_threshold = 0.83
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jvpkt"]
+
+[sub_resource type="Compositor" id="Compositor_604yj"]
 
 [node name="CloudTest" type="Node2D"]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://corxhrleskgv")
+spawn_path = NodePath("..")
+script = ExtResource("1_pmd2w")
+network_player = ExtResource("2_alrrd")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_eud8s")
+camera_attributes = SubResource("CameraAttributesPractical_jvpkt")
+compositor = SubResource("Compositor_604yj")
+
+[node name="Background" parent="." instance=ExtResource("3_0jeeu")]
+offset_left = -60.0
+offset_top = -84.0
+offset_right = 1207.0
+offset_bottom = 709.0
+
+[node name="Camera2D" parent="." instance=ExtResource("4_1xsug")]
+position = Vector2(576, 322)
+
+[node name="HighLevelUi" parent="." instance=ExtResource("5_i4pvw")]
+
+[node name="CloudSpanwer" parent="." instance=ExtResource("6_ec71s")]
+position = Vector2(530, 289)
+
+[editable path="Background"]

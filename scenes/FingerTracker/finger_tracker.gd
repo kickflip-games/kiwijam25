@@ -15,6 +15,8 @@ var finger_timeout: float = 1.0  # Switch to mouse after 1 second without finger
 var screen_bounds: Rect2
 var move_smoothing: float = 0.15
 var target_position: Vector2
+var tracker_shoot: bool = false
+var tracker_dash: bool = false
 
 # Camera and projection settings
 var main_camera: Camera2D = null
@@ -160,10 +162,12 @@ func parse_finger_json(json_string: String):
 			using_finger_control = true
 		
 		if data.has('c') and data['c']:
+			tracker_shoot = true
 			print("CLOSED FIST")
 			# send signal 
 		
-		if data.has('f') and data['f']:
+		if data.has('fast') and data['fast']:
+			tracker_dash = true
 			print("FAST HAND: DASH")
 			# send signal 
 	

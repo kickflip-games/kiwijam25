@@ -7,7 +7,7 @@ extends Node2D
 @export var cloud_max_scale: float = 1.5
 @export var spawn_delay_min: float = 0.2
 @export var spawn_delay_max: float = 1.0
-@export var random_seed: int = 12345  # Set same seed for all clients
+@export var random_seed: int = 14445  # Set same seed for all clients
 
 var has_spawned: bool = false
 
