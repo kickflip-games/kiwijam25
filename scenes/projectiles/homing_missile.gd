@@ -6,6 +6,7 @@ extends CharacterBody2D
 @export var speed: float = 200.0
 @export var turn_speed: float = 3.0
 @export var acceleration: float = 50.0
+@export var init_velocity: float = 400
 
 # Trail settings
 @export var trail_length: int = 30
@@ -23,7 +24,9 @@ var spawner: Node2D  # The player that fired the missile
 
 
 func _ready():
+	current_speed = init_velocity
 	find_target()
+	
 
 
 
@@ -32,13 +35,17 @@ func find_target():
 	for player in players:
 		if player != spawner:
 			target = player
-			return
+			return  # success – keep homing
 	print("No valid target found.")
-
+	# --- No valid target found: nuke every missile ---
+	for missile in get_tree().get_nodes_in_group("missile"):
+		
+		destroy()
 	
 
 func _physics_process(delta):
 	if not target:
+		find_target()
 		return
 	
 	# Calculate direction to target

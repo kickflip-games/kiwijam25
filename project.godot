@@ -27,6 +27,10 @@ GlobalSettings="*res://autoloads/GlobalSettings.gd"
 window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
 
+[global_group]
+
+missile=""
+
 [input]
 
 dash={
