@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-HighLevelNetworkHandler="*res://autoloads/high_level_network_handler.gd"
+NetworkHandler="*res://autoloads/network_handler.gd"
 CameraBounds="*res://autoloads/CameraBounds.gd"
 SceneManager="*res://autoloads/SceneManager.gd"
 GlobalSettings="*res://autoloads/GlobalSettings.gd"
@@ -37,8 +37,8 @@ shoot={
 
 [layer_names]
 
-2d_physics/layer_1="player"
-2d_physics/layer_2="bullet"
+2d_physics/layer_1="bullet"
+2d_physics/layer_2="player"
 2d_physics/layer_3="cloud"
 
 [rendering]

@@ -1,18 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://b3fmgu8gkxeyd"]
+[gd_scene load_steps=3 format=3 uid="uid://b3fmgu8gkxeyd"]
 
 [ext_resource type="Script" uid="uid://b10kiwfcmv2ne" path="res://scenes/clouds/cloud.gd" id="1_3uvew"]
 [ext_resource type="Texture2D" uid="uid://bu4eestwy8lcy" path="res://assets/clouds/cloud_0.png" id="1_jp0g4"]
 
-[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_jp0g4"]
-points = PackedVector2Array(-118, 28.5, 145, 29.5, 142, -18.5, 97, -75.5, 17, -75.5, -1, -28.5, -155, -25.5)
-
 [node name="Cloud" type="Area2D"]
 collision_layer = 4
+collision_mask = 2
 script = ExtResource("1_3uvew")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_jp0g4")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
 position = Vector2(0, 12.5)
-shape = SubResource("ConvexPolygonShape2D_jp0g4")
+polygon = PackedVector2Array(-140, 7.5, -150, -21.5, -4, -27.5, 15, -72.5, 92, -72.5, 133, -21.5, 141, 20.5, 90, 30.5, -111, 24.5)

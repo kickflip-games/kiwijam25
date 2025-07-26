@@ -9,9 +9,33 @@ extends Node2D
 @export var spawn_delay_max: float = 1.0
 @export var random_seed: int = 12345  # Set same seed for all clients
 
+var has_spawned: bool = false
+
 func _ready():
-	# Only spawn on server/authority, then sync to clients
-	if multiplayer.is_server():
+	# Wait for multiplayer to be properly set up
+	if multiplayer.has_multiplayer_peer():
+		_check_and_spawn()
+	else:
+		# Wait for multiplayer connection if not ready
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		multiplayer.connected_to_server.connect(_on_connected_to_server)
+
+func _on_peer_connected(id: int):
+	_check_and_spawn()
+
+func _on_connected_to_server():
+	_check_and_spawn()
+
+func _check_and_spawn():
+	# Only spawn once and only on the actual server/host
+	if not has_spawned and multiplayer.is_server():
+		has_spawned = true
+		spawn_clouds()
+
+# Alternative: Call this manually from your main game scene after multiplayer setup
+func initialize_clouds():
+	if multiplayer.is_server() and not has_spawned:
+		has_spawned = true
 		spawn_clouds()
 
 @rpc("any_peer", "call_local", "reliable")

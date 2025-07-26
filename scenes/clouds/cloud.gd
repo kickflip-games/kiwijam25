@@ -18,8 +18,8 @@ func _ready():
 	target_alpha = original_alpha
 	
 	# Connect signals for player entering/exiting
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	area_entered.connect(_on_area_entered)
+	area_exited.connect(_on_area_exited)
 
 func _process(delta):
 	if is_spawning:
@@ -36,29 +36,31 @@ func _process(delta):
 		target_alpha = original_alpha
 		modulate.a = lerp(modulate.a, target_alpha, restore_speed * delta)
 
-func _on_body_entered(body):
-	if body.is_in_group("player"):
+func _on_area_entered(area):
+	print("Area entered!")
+	if area.get_parent().is_in_group("player"):
+		print("PLAYER ENTERED!")
 		# Only server manages the player list to avoid conflicts
 		if multiplayer.is_server():
-			if body not in players_inside:
-				players_inside.append(body)
+			if area not in players_inside:
+				players_inside.append(area)
 				sync_cloud_state.rpc()
 		
 		# Set local hiding state
-		if body.has_method("set_hiding"):
-			body.set_hiding(true)
+		if area.has_method("set_hiding"):
+			area.set_hiding(true)
 
-func _on_body_exited(body):
-	if body.is_in_group("player"):
+func _on_area_exited(area):
+	if area.get_parent().is_in_group("player"):
 		# Only server manages the player list
 		if multiplayer.is_server():
-			if body in players_inside:
-				players_inside.erase(body)
+			if area in players_inside:
+				players_inside.erase(area)
 				sync_cloud_state.rpc()
 		
 		# Clear local hiding state
-		if body.has_method("set_hiding"):
-			body.set_hiding(false)
+		if area.has_method("set_hiding"):
+			area.set_hiding(false)
 
 @rpc("any_peer", "call_local", "reliable")
 func sync_cloud_state():
