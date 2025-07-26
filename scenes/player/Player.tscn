@@ -1,10 +1,11 @@
-[gd_scene load_steps=20 format=3 uid="uid://corxhrleskgv"]
+[gd_scene load_steps=21 format=3 uid="uid://corxhrleskgv"]
 
 [ext_resource type="Script" uid="uid://ct2s5gu2mvdyu" path="res://scenes/player/Player.gd" id="1_p0vlq"]
 [ext_resource type="Texture2D" uid="uid://dnj15kqmp5xsi" path="res://assets/textures/ship.png" id="2_4kuee"]
 [ext_resource type="Texture2D" uid="uid://cyedncb0hj8an" path="res://assets/textures/crosshair102.png" id="2_gfjak"]
 [ext_resource type="Texture2D" uid="uid://o686rxigi4bg" path="res://assets/textures/smoke/no_border/smokeWhite2.png" id="4_tpg5x"]
 [ext_resource type="Texture2D" uid="uid://ngvl70ryox6o" path="res://assets/textures/particles/circles/circle_05.png" id="5_tpg5x"]
+[ext_resource type="PackedScene" uid="uid://kxqua1oeth2g" path="res://scenes/FingerTracker/finger_tracker.tscn" id="6_c3xxp"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4kuee"]
 radius = 4.0
@@ -169,3 +170,6 @@ replication_config = SubResource("SceneReplicationConfig_tpg5x")
 [node name="BulletSpawn" type="Marker2D" parent="."]
 position = Vector2(30.364717, 0)
 scale = Vector2(-126.65372, 1.6654707)
+
+[node name="finger_tracker" parent="." instance=ExtResource("6_c3xxp")]
+scale = Vector2(0.99999994, 0.99999994)

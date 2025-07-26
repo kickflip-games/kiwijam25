@@ -167,7 +167,7 @@ func _process(delta):
 		if dash_timer <= 0:
 			end_dash()
 	else:
-		_handle_mouse_input()
+		_update_target_position.rpc(multiplayer.get_unique_id())
 		_apply_momentum_movement(delta)
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		
@@ -194,6 +194,10 @@ func _input(event):
 		max_speed = 0.4
 		
 	
+
+
+@onready var finger_tracker = $finger_tracker
+
 
 # -- shooting --
 
@@ -275,8 +279,24 @@ func end_dash():
 	trails["dash"].start_fade(self)
 
 # --- Enhanced Movement System ---
-func _handle_mouse_input():
-	target_position = get_global_mouse_position()
+#func _handle_mouse_input():
+	#target_position = get_global_mouse_position()
+	
+#func _update_target_position():
+	#if finger_tracker \
+		#and finger_tracker.is_connected_to_client() \
+		#and finger_tracker.get_input_method() == "finger":
+		#target_position = finger_tracker.target_position
+	#else:
+		#target_position = get_global_mouse_position()
+@rpc("call_local")
+func _update_target_position() -> void:
+	# Prefer the finger tracker.
+	if finger_tracker and finger_tracker.is_connected_to_client():
+		target_position = finger_tracker.target_position
+	else:
+		# Fallback – no tracker, or not connected.
+		target_position = get_global_mouse_position()
 
 func _apply_momentum_movement(delta):
 	var distance_to_target = global_position.distance_to(target_position)

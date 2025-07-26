@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bj1rdrxsn1k32"]
+
+[ext_resource type="PackedScene" uid="uid://kxqua1oeth2g" path="res://scenes/FingerTracker/finger_tracker.tscn" id="1_o5qli"]
+
+[node name="main" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="fingertracker" parent="." instance=ExtResource("1_o5qli")]
