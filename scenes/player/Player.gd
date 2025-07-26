@@ -53,7 +53,7 @@ var turn_fx_timer := 0.0
 var dash_timer := 0.0
 var dash_cooldown_timer := 0.0
 var dash_direction := Vector2.ZERO
-var target_position := Vector2.ZERO
+@export var target_position := Vector2.ZERO
 var velocity_history: Array[Vector2] = []
 var is_sharp_turning = false
 var is_initialized: bool = false
@@ -114,10 +114,12 @@ func _ready():
 	
 	
 		
-	if !is_multiplayer_authority():
+	if is_multiplayer_authority():
 		reticle.visible = true
 		reticle.modulate.a = 0.5
 		emit_signal("hp_changed", current_hp)
+	else:
+		reticle.visible = false
 
 	_init_colors.call_deferred()
 
@@ -177,8 +179,9 @@ func _process(delta):
 		trails["movement"].add_point(global_position, self)
 		_update_movement_particles()
 
-	_update_reticle(delta)
-	_update_dash_dial()
+	if is_multiplayer_authority():
+		_update_reticle(delta)
+		_update_dash_dial()
 	emit_signal("dash_cooldown_updated", _get_dash_percent_ready())
 
 func _update_velocity_history():
