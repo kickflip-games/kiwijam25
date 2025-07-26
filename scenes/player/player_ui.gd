@@ -36,15 +36,15 @@ func _on_hp_changed(current_hp: int):
 		var heart = hearts.get_child(i)
 		var target_texture = heart_full_texture if i < current_hp else heart_empty_texture
 
-		if heart.texture != target_texture:
-			var original_scale = heart.scale
-			heart_tween.kill()  # kill previous heart_tween to avoid overlap
-			heart_tween = create_tween()
-			heart.texture = target_texture
-			heart.scale = Vector2(1.5, 1.5)
-			heart_tween.heart_tween_property(heart, "scale", original_scale, 3).set_trans(heart_tween.TRANS_BOUNCE)
-		else:
-			heart.texture = target_texture
+		#if heart.texture != target_texture:
+			#var original_scale = heart.scale
+			#heart_tween.kill()  # kill previous heart_tween to avoid overlap
+			#heart_tween = create_tween()
+			#heart.texture = target_texture
+			#heart.scale = Vector2(1.5, 1.5)
+			#heart_tween.heart_tween_property(heart, "scale", original_scale, 3).set_trans(heart_tween.TRANS_BOUNCE)
+		#else:
+			#heart.texture = target_texture
 
 
 func _on_score_changed(current_score: int):
