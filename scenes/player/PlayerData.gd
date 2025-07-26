@@ -29,3 +29,19 @@ func _init(id: int = 0):
 	color = spawn_colors[player_id%len(spawn_colors)]
 	spawn_position= spawn_positions[player_id%len(spawn_positions)]
 	
+
+func to_dict() -> Dictionary:
+	return {
+		"player_id": player_id,
+		"player_name": player_name,
+		"color": color,
+		"spawn_position": spawn_position
+	}
+
+static func from_dict(d: Dictionary) -> PlayerData:
+	var pd = PlayerData.new()
+	pd.player_id = d.get("player_id", 0)
+	pd.player_name = d.get("player_name", "Player 0")
+	pd.color = d.get("color", Color.WHITE)
+	pd.spawn_position = d.get("spawn_position", Vector2.ZERO)
+	return pd

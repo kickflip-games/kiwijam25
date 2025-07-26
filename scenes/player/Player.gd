@@ -34,7 +34,7 @@ extends Node2D
 @export var dash_dial_radius := 40.0
 
 
-@export var player_data:PlayerData
+@export var player_data:Dictionary
 
 # --- Bullet -- 
 const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
@@ -96,22 +96,22 @@ func _enter_tree():
 	set_multiplayer_authority(name.to_int())
 
 func _ready():
-	print("🔍 Player _ready() called - Node path: %s, Authority: %d" % [get_path(), get_multiplayer_authority()])
+	
+	var AUTHORITY = get_multiplayer_authority()
+	print("🔍 Player _ready() called - Node path: %s, Authority: %d" % [get_path(), AUTHORITY])
 	
 	print("In player ready")
-
-	#global_position = spawn_point
-	target_position = global_position
-	is_initialized = true
-	print("Player data found - position: %s, color: %s" % [global_position, color])
 	
+	if is_multiplayer_authority():
+		print("ASSINGING DATA (auth=%d)"% AUTHORITY )
+		var pdata = PlayerData.new(AUTHORITY)
+		player_data = pdata.to_dict()
+ 
+
 	collision_area.connect("body_entered", _on_body_entered)
 	
 	last_rotation = rotation
 	
-	_setup_dash_dial()
-	_setup_trails()
-	_setup_colors()
 	
 		
 	if !is_multiplayer_authority():
@@ -119,16 +119,21 @@ func _ready():
 		reticle.modulate.a = 0.5
 		emit_signal("hp_changed", current_hp)
 
+	_init_colors.call_deferred()
 
-func _init_player(pos: Vector2, col:Color):
-	print("INIT PLAYER DATA - position: %s, color: %s" % [pos, col])
-	color = col
-	spawn_point = pos
+func _init_colors():
+	print(player_data)
+	global_position = player_data.get("spawn_position", Vector2.ZERO)
+	target_position = player_data.get("spawn_position", Vector2.ZERO)
+	color = player_data.get("color", Color.BLACK)
 	is_initialized = true
-
-func _setup_colors():
+	print("Player data found - position: %s, color: %s" % [global_position, color])
+	
+	_setup_dash_dial()
+	_setup_trails()
 	$Sprite2D.modulate = color
 	$Reticle.modulate = color
+
 
 func _setup_trails():
 	trails["dash"] = TrailData.new(dash_trail, 15, dash_trail_fade_duration)
@@ -149,8 +154,10 @@ func _setup_dash_dial():
 	dash_dial.default_color = Color(0.2, 0.8, 1.0, 0.8)
 
 func _process(delta):
-	if !is_multiplayer_authority() or is_hit_paused:
-		return
+	#if !is_multiplayer_authority() or is_hit_paused:
+		#return
+		
+		
 		
 	_update_velocity_history()
 	
@@ -162,7 +169,8 @@ func _process(delta):
 		if dash_timer <= 0:
 			end_dash()
 	else:
-		_update_target_position()
+		if is_multiplayer_authority():
+			_update_target_position()
 		_apply_momentum_movement(delta)
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		
@@ -179,8 +187,10 @@ func _update_velocity_history():
 		velocity_history.pop_front()
 
 func _input(event):
+	
 	if !is_multiplayer_authority() or is_hit_paused:
 		return
+		
 	if event.is_action_pressed("dash") and can_dash():
 		start_dash()
 	if event.is_action_pressed("shoot"):
@@ -276,6 +286,9 @@ func end_dash():
 # --- Enhanced Movement System ---
 
 func _update_target_position() -> void:
+	if !is_multiplayer_authority() or is_hit_paused:
+		return
+	
 	# Prefer the finger tracker.
 	if finger_tracker and finger_tracker.is_connected_to_client():
 		target_position = finger_tracker.target_position

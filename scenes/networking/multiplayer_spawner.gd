@@ -29,11 +29,6 @@ func spawn_player(id: int) -> void:
 	
 	print("🎮 Creating player %d with position: %s, color: %s" % [id, pdata.spawn_position, pdata.color])
 	
-	# Initialize player BEFORE adding to scene
-	player._init_player(
-		pdata.spawn_position,
-		pdata.color
-	)
 	
 	# Add to scene
 	var parent: Node = get_node(spawn_path)
