@@ -4,7 +4,7 @@ class_name Bullet
 
 @export var damage: int = 1
 @export var lifetime: float = 10.0
-@export var speed := 600.0
+@export var speed := 1000.0
 
 var velocity: Vector2
 

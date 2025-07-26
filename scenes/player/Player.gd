@@ -66,9 +66,10 @@ var is_sharp_turning = false
 		#
 func shoot():
 	var b = Bullet.instantiate()
-	b.global_position = global_position
+	b.global_position = $BulletSpawn.global_position
 	b.rotation        = rotation
 	get_parent().add_child(b)
+	b.add_collision_exception_with(self)
 
 # --- Trail System ---
 class Trail:
@@ -189,8 +190,7 @@ func _process(delta):
 		
 		trails["movement"].add_point(global_position, self)
 		_update_movement_particles()
-	if Input.is_action_just_pressed("shoot"):
-		shoot()
+
 	_update_reticle(delta)
 	_update_dash_dial()
 	emit_signal("dash_cooldown_updated", _get_dash_percent_ready())
@@ -203,6 +203,8 @@ func _update_velocity_history():
 func _input(event):
 	if event.is_action_pressed("dash") and can_dash():
 		start_dash()
+	if event.is_action_pressed("shoot"):
+		shoot()
 
 # --- Hit Pause System ---
 func trigger_hit_pause():
