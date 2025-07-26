@@ -86,6 +86,28 @@ properties/4/replication_mode = 1
 [node name="Player" type="Node2D" groups=["player"]]
 scale = Vector2(2.1725209, 1.5917355)
 script = ExtResource("1_p0vlq")
+acceleration = null
+max_speed = null
+drag = null
+turn_rate = null
+dash_speed = null
+dash_duration = null
+dash_cooldown = null
+dash_start_boost = null
+max_hp = null
+invincibility_duration = null
+circle_radius = null
+circle_speed = null
+circle_orbit_radius = null
+sharp_turn_threshold = null
+turn_fx_duration = null
+curved_trail_segments = null
+hit_pause_duration = null
+dash_bloom_intensity = null
+dash_trail_fade_duration = null
+idle_pulse_speed = null
+dash_dial_radius = null
+bullet_speed = null
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_4kuee")
