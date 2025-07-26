@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://bn6x8ju2cxxth"]
+[gd_scene load_steps=7 format=3 uid="uid://bn6x8ju2cxxth"]
 
 [ext_resource type="Script" uid="uid://ogg6bll42xhn" path="res://scenes/projectiles/homing_missile.gd" id="1_51g4w"]
 [ext_resource type="Texture2D" uid="uid://6v3e4dnf5qxc" path="res://assets/textures/projectiles/bomb.png" id="1_2237u"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2sou5"]
 size = Vector2(10, 6)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6hi81"]
 
 [sub_resource type="Curve" id="Curve_51g4w"]
 _data = [Vector2(0.02996254, 0), 0.0, 0.9589364, 0, 0, Vector2(0.99250937, 0.97495174), 0.0, 0.0, 0, 0]
@@ -26,11 +28,12 @@ position = Vector2(-4.7683716e-07, 0)
 scale = Vector2(2.3750002, 2.375)
 texture = ExtResource("1_2237u")
 
-[node name="ForceArea" type="Area2D" parent="."]
-visible = false
+[node name="RepulsionArea" type="Area2D" parent="."]
+scale = Vector2(1.635, 1.635)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ForceArea"]
-visible = false
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RepulsionArea"]
+scale = Vector2(1.515, 1.515)
+shape = SubResource("CircleShape2D_6hi81")
 
 [node name="Area2D" type="Area2D" parent="."]
 
