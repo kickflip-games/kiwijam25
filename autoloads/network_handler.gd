@@ -1,7 +1,7 @@
 # HighLevelNetworkHandler.gd - Updated to handle everything networking
 extends Node
 
-const PORT: int = 42069
+const PORT: int = 42222
 const MAX_PLAYERS: int = 4
 var peer: ENetMultiplayerPeer
 

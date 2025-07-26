@@ -79,6 +79,8 @@ func destroy():
 
 func _on_area_2d_body_entered(body):
 	# If this hits the player or other objects, destroy the missile
+	#if body.get
+	
 	if body.is_in_group("player"):
 		# Handle player damage here
 		print("Player hit by missile!")

@@ -1,12 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://kxqua1oeth2g"]
+[gd_scene load_steps=4 format=3 uid="uid://kxqua1oeth2g"]
 
-[ext_resource type="Script" path="res://scenes/FingerTracker/finger_tracker.gd" id="1_2tfc6"]
-
-[sub_resource type="Gradient" id="Gradient_2sjf3"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_2tfc6"]
-gradient = SubResource("Gradient_2sjf3")
+[ext_resource type="Script" uid="uid://ijc3eutjm3yn" path="res://scenes/FingerTracker/finger_tracker.gd" id="1_2tfc6"]
 
 [sub_resource type="Gradient" id="Gradient_2tfc6"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
@@ -14,29 +8,9 @@ colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_qqlbx"]
 gradient = SubResource("Gradient_2tfc6")
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_g2els"]
-
-[node name="finger_tracker" type="Node2D" node_paths=PackedStringArray("debug_marker", "status_label")]
+[node name="finger_tracker" type="Node2D"]
 script = ExtResource("1_2tfc6")
-debug_marker = NodePath("FingerDebugMarker")
-status_label = NodePath("CanvasLayer/StatusLabel")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_2tfc6")
 
 [node name="FingerDebugMarker" type="Sprite2D" parent="."]
+scale = Vector2(0.003, 0.01)
 texture = SubResource("GradientTexture2D_qqlbx")
-
-[node name="CollisionShape2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionShape2D"]
-shape = SubResource("CircleShape2D_g2els")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="StatusLabel" type="RichTextLabel" parent="CanvasLayer"]
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 410.0
-offset_bottom = 310.0
-text = "asdsadsdadsad"
