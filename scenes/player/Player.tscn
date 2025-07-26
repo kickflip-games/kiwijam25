@@ -84,6 +84,7 @@ properties/4/spawn = true
 properties/4/replication_mode = 1
 
 [node name="Player" type="Node2D" groups=["player"]]
+scale = Vector2(2.1725209, 1.5917355)
 script = ExtResource("1_p0vlq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
