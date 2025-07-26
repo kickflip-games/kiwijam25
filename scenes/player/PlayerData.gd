@@ -24,8 +24,8 @@ extends Resource
 
 
 func _init(id: int = 0):
-	player_id = id % 4 
+	player_id = id
 	player_name =  "Player " + str(player_id)
-	color = spawn_colors[player_id]
-	spawn_position= spawn_positions[player_id]
+	color = spawn_colors[player_id%len(spawn_colors)]
+	spawn_position= spawn_positions[player_id%len(spawn_positions)]
 	
