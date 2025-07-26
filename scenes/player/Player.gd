@@ -200,7 +200,7 @@ func _input(event):
 @rpc("call_local")
 func shoot(shooter_pid):
 	var b = Bullet.instantiate()
-	b.spawner = this
+	b.spawner = self
 	b.set_multiplayer_authority(shooter_pid)
 	b.global_position = $BulletSpawn.global_position
 	b.rotation = rotation
