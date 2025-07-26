@@ -69,7 +69,6 @@ func shoot():
 	b.global_position = $BulletSpawn.global_position
 	b.rotation        = rotation
 	get_parent().add_child(b)
-	b.add_collision_exception_with(self)
 
 # --- Trail System ---
 class Trail:
