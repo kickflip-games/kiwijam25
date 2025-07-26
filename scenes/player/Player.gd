@@ -50,6 +50,8 @@ var target_position := Vector2.ZERO
 var velocity_history: Array[Vector2] = []
 var is_sharp_turning = false
 
+@export var bullet_speed := 1000.0
+
 
 # -- shooting --
 
@@ -64,11 +66,14 @@ var is_sharp_turning = false
 		## build a Transform2D from your player's rotation and position
 		#bullet.global_transform = Transform2D(rotation, global_position)
 		#
-func shoot():
+@rpc("call_local")
+func shoot(shooter_pid):
 	var b = Bullet.instantiate()
+	b.set_multiplayer_authority(shooter_pid)
 	b.global_position = $BulletSpawn.global_position
-	b.rotation        = rotation
+	b.rotation = rotation
 	get_parent().add_child(b)
+
 
 # --- Trail System ---
 class Trail:
@@ -203,7 +208,8 @@ func _input(event):
 	if event.is_action_pressed("dash") and can_dash():
 		start_dash()
 	if event.is_action_pressed("shoot"):
-		shoot()
+		shoot.rpc(multiplayer.get_unique_id())
+		#shoot()
 
 # --- Hit Pause System ---
 func trigger_hit_pause():

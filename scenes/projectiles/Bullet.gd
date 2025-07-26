@@ -36,8 +36,10 @@ func _on_body_entered(body):
 	if body.has_method("take_damage"):
 		body.take_damage(damage)
 		_destroy_bullet()
-	queue_free()
-
+	_destroy_bullet().rpc()
+	
+	
+@rpc("call_local")
 func _destroy_bullet():
 	# Add destruction effect here if desired
 	queue_free()
