@@ -163,3 +163,7 @@ default_color = Color(0, 0, 0, 1)
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_tpg5x")
+
+[node name="BulletSpawn" type="Marker2D" parent="."]
+position = Vector2(23, 0)
+scale = Vector2(-126.65372, 1.6654707)
