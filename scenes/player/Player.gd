@@ -30,6 +30,9 @@ extends Node2D
 @export var idle_pulse_speed := 2.0
 @export var dash_dial_radius := 40.0
 
+# --- Bullet -- 
+const Bullet = preload("res://scenes/projectiles/Bullet.tscn")
+
 # --- State ---
 var velocity := Vector2.ZERO
 var current_hp := max_hp
@@ -46,6 +49,26 @@ var dash_direction := Vector2.ZERO
 var target_position := Vector2.ZERO
 var velocity_history: Array[Vector2] = []
 var is_sharp_turning = false
+
+
+# -- shooting --
+
+#func shoot(global_position):
+	#var bullet = Bullet.instantiate()
+	#get_parent().add_child(bullet)
+	#bullet.global_position = global_position
+	#bullet.rotation = rotation
+#func shoot():
+		#var bullet = Bullet.instantiate()
+		#get_parent().add_child(bullet)
+		## build a Transform2D from your player's rotation and position
+		#bullet.global_transform = Transform2D(rotation, global_position)
+		#
+func shoot():
+	var b = Bullet.instantiate()
+	b.global_position = global_position
+	b.rotation        = rotation
+	get_parent().add_child(b)
 
 # --- Trail System ---
 class Trail:
@@ -166,7 +189,8 @@ func _process(delta):
 		
 		trails["movement"].add_point(global_position, self)
 		_update_movement_particles()
-
+	if Input.is_action_just_pressed("shoot"):
+		shoot()
 	_update_reticle(delta)
 	_update_dash_dial()
 	emit_signal("dash_cooldown_updated", _get_dash_percent_ready())
