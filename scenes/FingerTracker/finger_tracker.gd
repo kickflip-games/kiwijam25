@@ -158,6 +158,14 @@ func parse_finger_json(json_string: String):
 			var world_pos = convert_screen_to_world_position(screen_pos)
 			target_position = world_pos
 			using_finger_control = true
+		
+		if data.has('c') and data['c']:
+			print("CLOSED FIST")
+			# send signal 
+		
+		if data.has('f') and data['f']:
+			print("FAST HAND: DASH")
+			# send signal 
 	
 	elif data.has("h") and not data["h"]:
 		using_finger_control = true

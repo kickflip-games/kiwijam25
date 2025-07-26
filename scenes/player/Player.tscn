@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://kxqua1oeth2g" path="res://scenes/FingerTracker/finger_tracker.tscn" id="6_c3xxp"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4kuee"]
-radius = 4.0
+radius = 8.246211
 
 [sub_resource type="Curve" id="Curve_524rm"]
 _data = [Vector2(0, 0.98683333), 0.0, 0.0, 0, 0, Vector2(0.85160434, 0), 0.0, 0.0, 0, 0]
@@ -85,10 +85,10 @@ properties/4/spawn = true
 properties/4/replication_mode = 1
 
 [node name="Player" type="Node2D" groups=["player"]]
-scale = Vector2(2.1725209, 1.5917355)
 script = ExtResource("1_p0vlq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.4375, 1.4375)
 texture = ExtResource("2_4kuee")
 
 [node name="Reticle" type="Sprite2D" parent="."]
