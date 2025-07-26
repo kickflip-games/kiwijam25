@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0qb6qs3taohy"]
+
+[ext_resource type="Script" uid="uid://cukt2o2ltvq2g" path="res://scenes/networking/lobbyUi.gd" id="1_5rgjr"]
+
+[node name="LobbyUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5rgjr")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+z_index = 2
+layout_mode = 0
+offset_right = 220.0
+offset_bottom = 358.0
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "LOBBY SETUP"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "status.."
+
+[node name="IPEntry" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "HOST IP"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ServerButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "HOST"
+
+[node name="JoinButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "JOIN"
+
+[node name="StartGameButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "START GAME"
+
+[node name="PlayerList" type="Tree" parent="."]
+clip_contents = false
+layout_mode = 0
+offset_top = 159.0
+offset_right = 220.0
+offset_bottom = 344.0
+column_titles_visible = true
+hide_root = true

@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://cfeicvpmqto3f" path="res://scenes/Main.gd" id="1_jlsqs"]
 [ext_resource type="PackedScene" uid="uid://bulqqx1t7sun1" path="res://scenes/background/Background.tscn" id="1_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://corxhrleskgv" path="res://scenes/player/Player.tscn" id="3_c01mt"]
-[ext_resource type="PackedScene" uid="uid://c0qb6qs3taohy" path="res://scenes/networking/HighLevelUI.tscn" id="3_nxtc6"]
-[ext_resource type="Script" uid="uid://de3vrhq3v5don" path="res://scenes/networking/high_level_multiplayer_spawner.gd" id="4_jlsqs"]
+[ext_resource type="PackedScene" uid="uid://c0qb6qs3taohy" path="res://scenes/networking/LobbyUI.tscn" id="3_nxtc6"]
+[ext_resource type="Script" uid="uid://de3vrhq3v5don" path="res://scenes/networking/multiplayer_spawner.gd" id="4_jlsqs"]
 [ext_resource type="PackedScene" uid="uid://y47yilag0ulc" path="res://scenes/clouds/cloud_spanwer.tscn" id="7_nxtc6"]
 
 [sub_resource type="Environment" id="Environment_nxtc6"]
