@@ -4,23 +4,21 @@ class_name Bullet
 
 @export var damage: int = 1
 @export var lifetime: float = 10.0
+@export var speed := 600.0
 
 var velocity: Vector2
 
 func _ready():
-	# Set up the bullet
-	gravity_scale = 0  # No gravity for top-down
-	lock_rotation = true  # Keep bullet upright
-	
-	# Connect collision signal
+	gravity_scale = 0
+	lock_rotation = true
 	body_entered.connect(_on_body_entered)
-	
-	# Auto-destroy after lifetime
 	get_tree().create_timer(lifetime).timeout.connect(_destroy_bullet)
-	
-	# Make sure the bullet moves
-	if velocity != Vector2.ZERO:
-		linear_velocity = velocity
+
+	# if nobody called set_velocity(), do a “forward” shot:
+	if velocity == Vector2.ZERO:
+		velocity = Vector2.RIGHT.rotated(rotation) * speed
+	linear_velocity = velocity
+
 
 func _integrate_forces(state):
 	# Keep constant velocity (ignore friction/dampening)
@@ -38,6 +36,7 @@ func _on_body_entered(body):
 	if body.has_method("take_damage"):
 		body.take_damage(damage)
 		_destroy_bullet()
+	queue_free()
 
 func _destroy_bullet():
 	# Add destruction effect here if desired
