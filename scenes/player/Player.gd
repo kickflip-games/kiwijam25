@@ -36,6 +36,7 @@ const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
 # --- State ---
 var velocity := Vector2.ZERO
 var current_hp := max_hp
+var score:= 0 
 var is_dashing := false
 var is_circling := false
 var is_invincible := false
@@ -118,6 +119,7 @@ var trails: Dictionary = {}
 
 # --- Signals ---
 signal hp_changed(current_hp: int)
+signal score_changed(current_score:int)
 signal dash_cooldown_updated(percent_ready: float)
 signal player_died
 
@@ -441,3 +443,8 @@ func die():
 	await death_tween.finished
 	
 	queue_free()
+
+
+func increase_score():
+	score +=1 
+	emit_signal("score_changed", score)
