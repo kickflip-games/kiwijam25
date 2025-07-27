@@ -1,5 +1,5 @@
-# Player.gd
 extends Node2D
+class_name Player
 
 # --- Configurable variables ---
 @export var acceleration := 800.0
@@ -96,6 +96,8 @@ signal hp_changed(current_hp: int)
 signal score_changed(current_score:int)
 signal dash_cooldown_updated(percent_ready: float)
 signal player_died
+signal player_shot_successful(shooter_id: int)
+
 
 
 
@@ -238,6 +240,7 @@ func _input(event):
 
 @rpc("call_local")
 func shoot(shooter_pid):
+	print("PLAYER %d SHOT bullet %d"%[get_multiplayer_authority(), shooter_pid])
 	var b = Bullet.instantiate()
 	b.spawner = self
 	b.set_color(color)
@@ -442,13 +445,18 @@ func _get_dash_percent_ready() -> float:
 
 # --- Enhanced Collision & Damage ---
 func _on_body_entered(body: Node2D):
-	print("Body entered: ", body.name)
+	print("Player Body entered: ", body.name)
+	print("ID: ", body.get_multiplayer_authority())
 	if is_dashing or is_invincible or is_dead:
 		return
 	
 	trigger_hit_pause()
 	take_damage(1)
+	player_shot_successful.emit(body.get_multiplayer_authority())
 	body.queue_free()
+
+
+
 
 func take_damage(amount: int):
 	current_hp -= amount
@@ -528,9 +536,10 @@ func die():
 var death_time_remaining: float = 0.0
 
 
-
+@rpc("any_peer")
 func increase_score():
-	score +=1 
+	score += 100 
+	print("increasing score INSIDE player")
 	emit_signal("score_changed", score)
 
 

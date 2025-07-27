@@ -123,12 +123,10 @@ func _on_repulsion_area_body_exited(body: Node) -> void:
 
 func _on_area_2d_body_entered(body: Node) -> void:
 	# FRIENDLY FIRE PROTECTION: Check if the body belongs to the spawner
-	if body.get_parent() == spawner:
-		print("NO friendly fire - spawner component hit")
-		return
-	
-	if body.is_in_group("player"):
+
+	if body.get_parent().is_in_group("player"):
 		print("Player hit by missile!")
+		
 		if spawner.has_method("increase_score"):
 			print("score increased")
 			spawner.increase_score() # Call the function if it exists

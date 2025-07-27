@@ -13,6 +13,7 @@ extends Control
 var connected_players: Dictionary = {}
 var is_host: bool = false
 
+
 # Game scene path
 @export var game_scene_path: String = "res://scenes/Main.tscn"
 

@@ -1,6 +1,9 @@
 extends MultiplayerSpawner
 @export var network_player: PackedScene
 var spawned_players: Dictionary = {}
+var player_scores: Dictionary = {}
+
+
 
 
 func _ready() -> void:
@@ -20,7 +23,7 @@ func spawn_player(id: int) -> void:
 		print("⚠️ Player %d already spawned" % id)
 		return
 	
-	var player: Node = network_player.instantiate()
+	var player = network_player.instantiate()
 	player.name = str(id)
 	var spawn_index = spawned_players.size() % 4
 	
@@ -31,7 +34,7 @@ func spawn_player(id: int) -> void:
 	
 	
 	# Add to scene
-	var parent: Node = get_node(spawn_path)
+	var parent = get_node(spawn_path)
 	parent.add_child(player, true)  # Force readable name
 	
 	# Set authority after the node is in the scene tree
@@ -39,7 +42,10 @@ func spawn_player(id: int) -> void:
 	
 	# Track spawned players
 	spawned_players[id] = player
+	player_scores[id] = 0
 	player.position = pdata.spawn_position
+	player.player_shot_successful.connect(increase_score)
+	
 	
 	print("✅ Spawned player %d at %s" % [id, player.global_position])
 
@@ -55,3 +61,13 @@ func despawn_player(id: int) -> void:
 		spawned_players[id].queue_free()
 		spawned_players.erase(id)
 		print("🗑️ Despawned player %d" % id)
+
+
+
+
+@rpc("any_peer")
+func increase_score(player_id:int):
+	player_scores[player_id] += 100
+	print("increase %d's score " % player_id)
+	print(player_scores)
+	spawned_players[player_id].increase_score()
