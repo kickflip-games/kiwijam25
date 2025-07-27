@@ -42,6 +42,7 @@ var color:Color
 const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
 
 # --- State ---
+var sprite_init_scale : Vector2
 var velocity := Vector2.ZERO
 var current_hp := max_hp
 var score:= 0 
@@ -131,6 +132,7 @@ func _ready():
 		player_ui.queue_free()
 
 	_init_colors.call_deferred()
+	sprite_init_scale = $Sprite2D.scale
 
 func _init_colors():
 	print(player_data)
@@ -176,6 +178,9 @@ func _process(delta):
 	#if !is_multiplayer_authority() or is_hit_paused:
 		#return
 		
+		
+	if is_dead:
+		return
 		
 		
 	_update_velocity_history()
@@ -246,9 +251,11 @@ func trigger_hit_pause():
 	is_hit_paused = true
 	Engine.time_scale = 0.1
 	
+	
+	
 	var impact_tween = create_tween()
 	impact_tween.tween_property(sprite, "scale", Vector2(1.3, 0.7), hit_pause_duration * 0.3)
-	impact_tween.tween_property(sprite, "scale", Vector2.ONE, hit_pause_duration * 0.7)
+	impact_tween.tween_property(sprite, "scale", sprite_init_scale, hit_pause_duration * 0.7)
 	
 	await get_tree().create_timer(hit_pause_duration * Engine.time_scale).timeout
 	Engine.time_scale = 1.0
@@ -294,7 +301,7 @@ func end_dash():
 	
 	var end_tween = create_tween()
 	end_tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.2)
-	end_tween.parallel().tween_property(sprite, "scale", Vector2.ONE, 0.2)
+	end_tween.parallel().tween_property(sprite, "scale", sprite_init_scale, 0.2)
 	
 	dash_particles.emitting = false
 	
@@ -453,8 +460,8 @@ func become_invincible():
 	
 	var tween = create_tween().set_loops(int(invincibility_duration * 6))
 	tween.set_trans(Tween.TRANS_SINE)
-	tween.tween_property(sprite, "modulate", Color(1.5, 0.5, 0.5, 0.4), invincibility_duration / 12)
 	tween.tween_property(sprite, "modulate", Color.WHITE, invincibility_duration / 12)
+	tween.tween_property(sprite, "modulate", color, invincibility_duration / 12)
 
 	await get_tree().create_timer(invincibility_duration).timeout
 	is_invincible = false
@@ -485,6 +492,9 @@ func die():
 	movement_trail.visible = false
 	collision_area.monitoring = false
 	reticle.visible = false
+	
+	for trail in trails.values():
+		trail.clear()
 
 
 	# fade-out effect
@@ -497,8 +507,10 @@ func die():
 	await get_tree().create_timer(death_timeout_duration).timeout
 
 	# revive
-	sprite.modulate = Color(1, 1, 1, 1)
-	sprite.scale = Vector2.ONE
+	current_hp = max_hp
+	emit_signal("hp_changed", max_hp)
+	sprite.modulate = color
+	sprite.scale = sprite_init_scale
 	collision_area.monitoring = true
 	if is_multiplayer_authority():
 		reticle.visible = true
@@ -506,6 +518,8 @@ func die():
 	movement_trail.visible = true
 	
 	is_dead = false
+	
+	
 
 
 
