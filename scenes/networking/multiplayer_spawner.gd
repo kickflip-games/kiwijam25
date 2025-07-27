@@ -23,7 +23,7 @@ func spawn_player(id: int) -> void:
 	var player: Node = network_player.instantiate()
 	var spawn_index = spawned_players.size() % 4
 	var pdata = PlayerData.new(spawn_index)
-	player.name = str(id)
+	player.name = str(id) 
 	
 	print("🎮 Creating player %d with position: %s, color: %s" % [spawn_index, pdata.spawn_position, pdata.color])
 	# Add to scene
@@ -31,7 +31,7 @@ func spawn_player(id: int) -> void:
 	parent.add_child(player, true) 
 	
 	spawned_players[id] = player
-	spawned_data[id] = pdata
+	spawned_data[id] = pdata.to_dict()
 	
 	# INIT this player's data on their own client
 	player.rpc_id(id, "init_player", pdata.to_dict())
@@ -39,7 +39,9 @@ func spawn_player(id: int) -> void:
 	# Tell all *other* clients about this new player
 	for peer_id in spawned_players:
 		if peer_id != id:
-			player.rpc_id(peer_id, "init_player", pdata.to_dict())
+			spawned_players[peer_id].rpc_id(peer_id, "init_player", spawned_data[peer_id])
+			print("--> Updating colors for %d " %peer_id)
+			print("--> spawned_data[peer_id], ", spawned_data[peer_id])
 	
 	print("✅ Spawned player %d at %s" % [id, player.global_position])
 	print("COLLECTED DATA: ", spawned_data)

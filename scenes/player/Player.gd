@@ -117,11 +117,13 @@ func init_player(data: Dictionary):
 	print("init author: ", get_multiplayer_authority())
 	player_data = PlayerData.from_dict(data)
 	_init_colors()
-	global_position = player_data.spawn_position
-	target_position = player_data.spawn_position
+
 	
 @rpc("any_peer")
-func init_authority_vars():
+func init_authority_vars(data: Dictionary):
+	player_data = PlayerData.from_dict(data)
+	global_position = player_data.spawn_position
+	target_position = player_data.spawn_position
 	reticle.visible = true
 	reticle.modulate.a = 0.5
 	emit_signal("hp_changed", current_hp)
