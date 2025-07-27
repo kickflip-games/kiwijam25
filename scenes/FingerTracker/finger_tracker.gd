@@ -29,7 +29,7 @@ var no_data_counter: int = 0
 @onready var debug_marker: Node2D = $FingerDebugMarker
 @export var show_debug_marker: bool = true
 
-const SHOOT_COOLDOWN_MAX := 20
+const SHOOT_COOLDOWN_MAX := 35
 const DASH_COOLDOWN_MAX := 15
 
 # these track the remaining frames until the next emit is allowed
