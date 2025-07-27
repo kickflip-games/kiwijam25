@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://c7etnmicu136n"]
+[gd_scene load_steps=11 format=3 uid="uid://c7etnmicu136n"]
 
 [ext_resource type="PackedScene" uid="uid://dsmsb7kwv0ce1" path="res://managers/camera_2d.tscn" id="1_c01mt"]
 [ext_resource type="Script" uid="uid://cfeicvpmqto3f" path="res://scenes/Main.gd" id="1_jlsqs"]
@@ -16,6 +16,9 @@ glow_hdr_threshold = 0.83
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jlsqs"]
 
 [sub_resource type="Compositor" id="Compositor_q8u5g"]
+
+[sub_resource type="Theme" id="Theme_c01mt"]
+default_font_size = 30
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jlsqs")
@@ -41,5 +44,30 @@ offset_bottom = 709.0
 position = Vector2(576, 322)
 
 [node name="HighLevelUi" parent="." instance=ExtResource("3_nxtc6")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ScoreUI" type="Control" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0.54509807)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = SubResource("Theme_c01mt")
+
+[node name="Tree" type="Tree" parent="CanvasLayer/ScoreUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 670.0
+offset_bottom = -145.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+column_titles_visible = true
 
 [editable path="Background"]

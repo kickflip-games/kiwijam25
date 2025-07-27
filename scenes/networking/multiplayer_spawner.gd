@@ -4,6 +4,9 @@ var spawned_players: Dictionary = {}
 var player_scores: Dictionary = {}
 
 
+signal scores_updated_event(scores_dict:Dictionary)
+
+
 
 
 func _ready() -> void:
@@ -71,3 +74,4 @@ func increase_score(player_id:int):
 	print("increase %d's score " % player_id)
 	print(player_scores)
 	spawned_players[player_id].increase_score()
+	scores_updated_event.emit(player_scores)

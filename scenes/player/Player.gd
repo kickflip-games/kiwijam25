@@ -540,7 +540,8 @@ var death_time_remaining: float = 0.0
 func increase_score():
 	score += 100 
 	print("increasing score INSIDE player")
-	emit_signal("score_changed", score)
+	if player_ui:
+		player_ui._on_score_changed(score)
 
 
 func _on_finger_tracker_finger_dash() -> void:

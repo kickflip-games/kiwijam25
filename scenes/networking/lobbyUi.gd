@@ -154,7 +154,8 @@ func _update_ui_for_client():
 	status_label.visible = true
 	player_list.visible = false
 	
-	$VBoxContainer.visible = false
+	get_parent().get_node("CanvasLayer").visible = false
+	
 
 func _reset_lobby():
 	# Reset to initial state
