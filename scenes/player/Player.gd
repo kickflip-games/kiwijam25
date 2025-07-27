@@ -193,7 +193,7 @@ func _process(delta):
 	if is_dashing:
 		_handle_dash_movement(delta)
 		trails["dash"].add_point(global_position, self)
-		_apply_dash_bloom_effect()
+		#_apply_dash_bloom_effect()
 		dash_timer -= delta
 		if dash_timer <= 0:
 			end_dash()
@@ -279,17 +279,17 @@ func start_dash():
 	trails["dash"].clear()
 	dash_trail.visible = true
 	
-	sprite.modulate = Color(dash_bloom_intensity, dash_bloom_intensity, dash_bloom_intensity + 0.3, 0.9)
-	sprite.scale = Vector2(1.3, 0.7)
+	#sprite.modulate = Color(dash_bloom_intensity, dash_bloom_intensity, dash_bloom_intensity + 0.3, 0.9)
+	#sprite.scale = Vector2(1.3, 0.7)
 	
 	dash_particles.emitting = true
 	if movement_particles:
 		movement_particles.emitting = false
 
-func _apply_dash_bloom_effect():
-	var pulse = sin(Time.get_ticks_msec() * 0.02) * 0.2 + 1.0
-	sprite.modulate = Color(dash_bloom_intensity * pulse, dash_bloom_intensity * pulse, 
-						   (dash_bloom_intensity + 0.3) * pulse, 0.9)
+#func _apply_dash_bloom_effect():
+	#var pulse = sin(Time.get_ticks_msec() * 0.02) * 0.2 + 1.0
+	#sprite.modulate = Color(dash_bloom_intensity * pulse, dash_bloom_intensity * pulse, 
+						   #(dash_bloom_intensity + 0.3) * pulse, 0.9)
 
 func _handle_dash_movement(delta):
 	var dash_progress = 1.0 - (dash_timer / dash_duration)
@@ -304,9 +304,9 @@ func _handle_dash_movement(delta):
 func end_dash():
 	is_dashing = false
 	
-	var end_tween = create_tween()
-	end_tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.2)
-	end_tween.parallel().tween_property(sprite, "scale", sprite_init_scale, 0.2)
+	#var end_tween = create_tween()
+	#end_tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.2)
+	#end_tween.parallel().tween_property(sprite, "scale", sprite_init_scale, 0.2)
 	
 	dash_particles.emitting = false
 	
