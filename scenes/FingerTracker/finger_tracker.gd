@@ -29,6 +29,13 @@ var no_data_counter: int = 0
 @onready var debug_marker: Node2D = $FingerDebugMarker
 @export var show_debug_marker: bool = true
 
+const SHOOT_COOLDOWN_MAX := 5
+const DASH_COOLDOWN_MAX := 10
+
+# these track the remaining frames until the next emit is allowed
+var shoot_cooldown_frames: int = 0
+var dash_cooldown_frames: int = 0
+
 signal finger_dash
 signal finger_shoot
 
@@ -143,38 +150,73 @@ func convert_screen_to_world_position(screen_pos: Vector2) -> Vector2:
 	
 	return world_pos
 
-func parse_finger_json(json_string: String):
-	"""Parse JSON finger tracking data and update position"""
+#func parse_finger_json(json_string: String):
+	#"""Parse JSON finger tracking data and update position"""
+	#var json = JSON.new()
+	#var parse_result = json.parse(json_string)
+	#
+	#if parse_result != OK:
+		#print("JSON Parse Error: ", parse_result)
+		#return
+	#
+	#var data = json.data
+	#last_finger_update = Time.get_ticks_msec() / 1000.0
+	#if data.has("h") and data["h"]:
+		#
+		#if data.has("x") and data.has("y"):
+			#var screen_pos = Vector2(data["x"], data["y"])
+			#var world_pos = convert_screen_to_world_position(screen_pos)
+			#target_position = world_pos
+			#using_finger_control = true
+		#
+		#if data.has('c') and data['c']:
+			#finger_shoot.emit()
+			#print("CLOSED FIST")
+			## send signal 
+		#
+		#if data.has('fast') and data['fast']:
+			#finger_dash.emit()
+			#print("FAST HAND: DASH")
+			## send signal 
+	#
+	#elif data.has("h") and not data["h"]:
+		#using_finger_control = true
+func parse_finger_json(json_string: String) -> void:
+	"""Parse JSON finger tracking data, update position, and rate‑limit gestures."""
 	var json = JSON.new()
-	var parse_result = json.parse(json_string)
-	
-	if parse_result != OK:
-		print("JSON Parse Error: ", parse_result)
+	if json.parse(json_string) != OK:
+		push_error("JSON Parse Error: %s" % json.get_error_message())
 		return
-	
 	var data = json.data
 	last_finger_update = Time.get_ticks_msec() / 1000.0
+
+	# decrement cooldowns each call
+	if shoot_cooldown_frames > 0:
+		shoot_cooldown_frames -= 1
+	if dash_cooldown_frames > 0:
+		dash_cooldown_frames -= 1
+
+	# position handling as before
 	if data.has("h") and data["h"]:
-		
 		if data.has("x") and data.has("y"):
 			var screen_pos = Vector2(data["x"], data["y"])
-			var world_pos = convert_screen_to_world_position(screen_pos)
-			target_position = world_pos
+			target_position = convert_screen_to_world_position(screen_pos)
 			using_finger_control = true
-		
-		if data.has('c') and data['c']:
+
+	# CLOSED FIST → shoot, but only if cooldown expired
+		if data.has("c") and data["c"] and shoot_cooldown_frames <= 0:
+			shoot_cooldown_frames = SHOOT_COOLDOWN_MAX
 			finger_shoot.emit()
 			print("CLOSED FIST")
-			# send signal 
-		
-		if data.has('fast') and data['fast']:
+
+	# FAST HAND → dash, but only if cooldown expired
+		if data.has("fast") and data["fast"] and dash_cooldown_frames <= 0:
+			dash_cooldown_frames = DASH_COOLDOWN_MAX
 			finger_dash.emit()
 			print("FAST HAND: DASH")
-			# send signal 
-	
-	elif data.has("h") and not data["h"]:
-		using_finger_control = true
 
+	elif data.has("h") and not data["h"]:
+		using_finger_control = false
 
 func update_debug_marker():
 	"""Update the debug marker to show target position"""
