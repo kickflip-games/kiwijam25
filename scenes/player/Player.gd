@@ -193,7 +193,7 @@ func _input(event):
 	
 	if !is_multiplayer_authority() or is_hit_paused:
 		return
-		
+	
 	if event.is_action_pressed("dash") and can_dash():
 		start_dash()
 	if event.is_action_pressed("shoot"):
@@ -457,3 +457,11 @@ func die():
 func increase_score():
 	score +=1 
 	emit_signal("score_changed", score)
+
+
+func _on_finger_tracker_finger_dash() -> void:
+	start_dash()
+
+
+func _on_finger_tracker_finger_shoot() -> void:
+	shoot.rpc(multiplayer.get_unique_id())
