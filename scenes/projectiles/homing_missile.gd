@@ -5,7 +5,7 @@ extends CharacterBody2D
 @export var speed         : float = 200.0
 @export var turn_speed    : float = 3.0
 @export var acceleration  : float = 50.0
-@export var init_velocity : float = 400.0
+@export var init_velocity : float = 600.0
 # ── NEW: how strong the mutual repulsion is (px/sec²)
 @export var repulsion_force  : float = 2000.0
 # ── NEW: radius of the repulsion area (px)
