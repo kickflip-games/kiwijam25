@@ -133,6 +133,8 @@ func _ready():
 
 	_init_colors.call_deferred()
 	sprite_init_scale = $Sprite2D.scale
+	timeout_label.visible = false
+
 
 func _init_colors():
 	print(player_data)
@@ -178,11 +180,14 @@ func _process(delta):
 	#if !is_multiplayer_authority() or is_hit_paused:
 		#return
 		
-		
 	if is_dead:
+		# tick down
+		death_time_remaining = max(death_time_remaining - delta, 0)
+		timeout_label.text = str(ceil(death_time_remaining))
 		return
-		
-		
+
+
+
 	_update_velocity_history()
 	
 	if is_dashing:
@@ -468,16 +473,7 @@ func become_invincible():
 	print("Player is no longer invincible.")
 
 
-#func die():
-	#print("Player has died")
-	#player_died.emit()
-	#
-	#var death_tween = create_tween()
-	#death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
-	#death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
-	#await death_tween.finished
-	#
-	#queue_free()
+
 
 @export var death_timeout_duration: float = 10.0  # seconds to stay timed out
 var is_dead: bool = false
@@ -496,6 +492,10 @@ func die():
 	for trail in trails.values():
 		trail.clear()
 
+	# start countdown
+	death_time_remaining = death_timeout_duration
+	timeout_label.visible = true
+	timeout_label.text = str(ceil(death_time_remaining))
 
 	# fade-out effect
 	var death_tween = create_tween()
@@ -516,11 +516,16 @@ func die():
 		reticle.visible = true
 		reticle.modulate.a = 0.5
 	movement_trail.visible = true
-	
+	timeout_label.visible = false
 	is_dead = false
 	
 	
 
+# at the top, alongside your other @onreadys:
+@onready var timeout_label: Label = $TimeoutLabel
+
+# state for countdown
+var death_time_remaining: float = 0.0
 
 
 
