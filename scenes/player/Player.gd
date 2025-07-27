@@ -225,6 +225,7 @@ func _input(event):
 func shoot(shooter_pid):
 	var b = Bullet.instantiate()
 	b.spawner = self
+	b.set_color(color)
 	b.set_multiplayer_authority(shooter_pid)
 	b.global_position = $BulletSpawn.global_position
 	b.rotation = rotation

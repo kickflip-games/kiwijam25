@@ -26,7 +26,6 @@ _spawnable_scenes = PackedStringArray("uid://corxhrleskgv")
 spawn_path = NodePath("..")
 script = ExtResource("4_jlsqs")
 network_player = ExtResource("3_c01mt")
-spawn_colors = [Color(0.5882353, 0.1254902, 0.050980393, 1), Color(0.11863709, 0.17566203, 0.6074219, 1), Color(0.8105469, 0.7025869, 0.16780853, 1), Color(0.21633911, 0.54296875, 0.32606626, 1)]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_nxtc6")
