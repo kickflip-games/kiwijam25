@@ -13,7 +13,9 @@ extends Node2D
 @export var max_hp := 3
 @export var invincibility_duration: float = 1.2
 
-@export var color: Color
+@export var main_color: Color
+@export var other_color: Color
+var color:Color
 @export var spawn_point: Vector2
 
 # --- Circling behavior ---
@@ -59,6 +61,8 @@ var is_sharp_turning = false
 var is_initialized: bool = false
 
 @export var bullet_speed := 1000.0
+
+
 
 
 
@@ -127,12 +131,20 @@ func _init_colors():
 	print(player_data)
 	global_position = player_data.get("spawn_position", Vector2.ZERO)
 	target_position = player_data.get("spawn_position", Vector2.ZERO)
-	color = player_data.get("color", Color.BLACK)
+	
+	
+	
 	is_initialized = true
 	print("Player data found - position: %s, color: %s" % [global_position, color])
 	
 	_setup_dash_dial()
 	_setup_trails()
+	
+	if is_multiplayer_authority():
+		color = main_color
+	else:
+		color = other_color
+	
 	$Sprite2D.modulate = color
 	$Reticle.modulate = color
 
@@ -191,7 +203,7 @@ func _update_velocity_history():
 
 func _input(event):
 	
-	if !is_multiplayer_authority() or is_hit_paused:
+	if not is_multiplayer_authority() or is_hit_paused or is_dead:
 		return
 	
 	if event.is_action_pressed("dash") and can_dash():
@@ -213,6 +225,7 @@ func _input(event):
 func shoot(shooter_pid):
 	var b = Bullet.instantiate()
 	b.spawner = self
+	b.set_color(color)
 	b.set_multiplayer_authority(shooter_pid)
 	b.global_position = $BulletSpawn.global_position
 	b.rotation = rotation
@@ -413,7 +426,7 @@ func _get_dash_percent_ready() -> float:
 # --- Enhanced Collision & Damage ---
 func _on_body_entered(body: Node2D):
 	print("Body entered: ", body.name)
-	if is_dashing or is_invincible:
+	if is_dashing or is_invincible or is_dead:
 		return
 	
 	trigger_hit_pause()
@@ -442,16 +455,54 @@ func become_invincible():
 	is_invincible = false
 	print("Player is no longer invincible.")
 
+
+#func die():
+	#print("Player has died")
+	#player_died.emit()
+	#
+	#var death_tween = create_tween()
+	#death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
+	#death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
+	#await death_tween.finished
+	#
+	#queue_free()
+
+@export var death_timeout_duration: float = 10.0  # seconds to stay timed out
+var is_dead: bool = false
+
 func die():
-	print("Player has died")
+	print("Player has timed out")
 	player_died.emit()
-	
+	is_dead = true
+
+	# disable collisions & input
+	movement_particles.visible = false
+	movement_trail.visible = false
+	collision_area.monitoring = false
+	reticle.visible = false
+
+
+	# fade-out effect
 	var death_tween = create_tween()
-	death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
+	death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	await death_tween.finished
+
+	# stay timed out
+	await get_tree().create_timer(death_timeout_duration).timeout
+
+	# revive
+	sprite.modulate = Color(1, 1, 1, 1)
+	sprite.scale = Vector2.ONE
+	collision_area.monitoring = true
+	if is_multiplayer_authority():
+		reticle.visible = true
+		reticle.modulate.a = 0.5
+	movement_trail.visible = true
 	
-	queue_free()
+	is_dead = false
+
+
 
 
 func increase_score():

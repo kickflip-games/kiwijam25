@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bn6x8ju2cxxth"]
+[gd_scene load_steps=8 format=3 uid="uid://bn6x8ju2cxxth"]
 
 [ext_resource type="Script" uid="uid://ogg6bll42xhn" path="res://scenes/projectiles/homing_missile.gd" id="1_51g4w"]
 [ext_resource type="Texture2D" uid="uid://6v3e4dnf5qxc" path="res://assets/textures/projectiles/bomb.png" id="1_2237u"]
+[ext_resource type="PackedScene" uid="uid://dnve61dnfoaag" path="res://scenes/projectiles/FX.tscn" id="2_cdy0x"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2sou5"]
 size = Vector2(10, 6)
@@ -19,12 +20,12 @@ colors = PackedColorArray(1, 1, 0, 1, 1, 1, 0, 0)
 [node name="HomingMissile" type="CharacterBody2D" groups=["missile"]]
 collision_mask = 2
 script = ExtResource("1_51g4w")
+explosion_scene = ExtResource("2_cdy0x")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_2sou5")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-4.7683716e-07, 0)
 scale = Vector2(2.3750002, 2.375)
 texture = ExtResource("1_2237u")
 
