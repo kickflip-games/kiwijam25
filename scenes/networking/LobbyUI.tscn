@@ -21,10 +21,6 @@ offset_bottom = 358.0
 layout_mode = 2
 text = "LOBBY SETUP"
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
-text = "status.."
-
 [node name="IPEntry" type="LineEdit" parent="VBoxContainer"]
 layout_mode = 2
 placeholder_text = "HOST IP"
@@ -42,10 +38,12 @@ layout_mode = 2
 text = "JOIN"
 
 [node name="StartGameButton" type="Button" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "START GAME"
 
 [node name="PlayerList" type="Tree" parent="."]
+visible = false
 clip_contents = false
 layout_mode = 0
 offset_top = 159.0
@@ -53,3 +51,12 @@ offset_right = 220.0
 offset_bottom = 344.0
 column_titles_visible = true
 hide_root = true
+
+[node name="StatusLabel" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 12.0
+offset_right = 224.0
+offset_bottom = 47.0
+theme_override_font_sizes/font_size = 25
+text = "status..."
