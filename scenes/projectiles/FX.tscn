@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://dnve61dnfoaag"]
+
+[ext_resource type="Texture2D" uid="uid://c12kksplhexl8" path="res://assets/textures/smoke/no_border/smokeWhite1.png" id="1_qtwab"]
+
+[sub_resource type="Curve" id="Curve_j18ip"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_3xhb3"]
+curve = SubResource("Curve_j18ip")
+
+[sub_resource type="Curve" id="Curve_x3fqw"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.75528705, 0.9799072), 0.0, 0.0, 0, 0, Vector2(0.98187315, 0.015455961), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_k8lj6"]
+curve = SubResource("Curve_x3fqw")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bqkwt"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 35.97
+spread = 76.546
+gravity = Vector3(0, 0, 0)
+scale_curve = SubResource("CurveTexture_k8lj6")
+color = Color(0.43137255, 0.43137255, 0.43137255, 1)
+hue_variation_curve = SubResource("CurveTexture_3xhb3")
+
+[node name="Fx" type="GPUParticles2D"]
+emitting = false
+amount = 10
+texture = ExtResource("1_qtwab")
+one_shot = true
+explosiveness = 1.0
+collision_base_size = 0.5
+process_material = SubResource("ParticleProcessMaterial_bqkwt")

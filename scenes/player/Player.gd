@@ -13,7 +13,9 @@ extends Node2D
 @export var max_hp := 3
 @export var invincibility_duration: float = 1.2
 
-@export var color: Color
+@export var main_color: Color
+@export var other_color: Color
+var color:Color
 @export var spawn_point: Vector2
 
 # --- Circling behavior ---
@@ -59,6 +61,8 @@ var is_sharp_turning = false
 var is_initialized: bool = false
 
 @export var bullet_speed := 1000.0
+
+
 
 
 
@@ -127,12 +131,20 @@ func _init_colors():
 	print(player_data)
 	global_position = player_data.get("spawn_position", Vector2.ZERO)
 	target_position = player_data.get("spawn_position", Vector2.ZERO)
-	color = player_data.get("color", Color.BLACK)
+	
+	
+	
 	is_initialized = true
 	print("Player data found - position: %s, color: %s" % [global_position, color])
 	
 	_setup_dash_dial()
 	_setup_trails()
+	
+	if is_multiplayer_authority():
+		color = main_color
+	else:
+		color = other_color
+	
 	$Sprite2D.modulate = color
 	$Reticle.modulate = color
 
@@ -213,6 +225,7 @@ func _input(event):
 func shoot(shooter_pid):
 	var b = Bullet.instantiate()
 	b.spawner = self
+	b.set_color(color)
 	b.set_multiplayer_authority(shooter_pid)
 	b.global_position = $BulletSpawn.global_position
 	b.rotation = rotation
