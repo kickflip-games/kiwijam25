@@ -34,7 +34,7 @@ extends Node2D
 @export var dash_dial_radius := 40.0
 
 
-@export var player_data:Dictionary
+var player_data:PlayerData
 
 # --- Bullet -- 
 const Bullet = preload("res://scenes/projectiles/homing_missile.tscn")
@@ -96,46 +96,38 @@ func _enter_tree():
 	set_multiplayer_authority(name.to_int())
 
 func _ready():
-	
 	var AUTHORITY = get_multiplayer_authority()
 	print("🔍 Player _ready() called - Node path: %s, Authority: %d" % [get_path(), AUTHORITY])
-	
-	print("In player ready")
-	
-	if is_multiplayer_authority():
-		print("ASSINGING DATA (auth=%d)"% AUTHORITY )
-		var pdata = PlayerData.new(AUTHORITY)
-		player_data = pdata.to_dict()
- 
-
 	collision_area.connect("body_entered", _on_body_entered)
-	
 	last_rotation = rotation
-	
-	
 		
-	if is_multiplayer_authority():
-		reticle.visible = true
-		reticle.modulate.a = 0.5
-		emit_signal("hp_changed", current_hp)
-	else:
-		reticle.visible = false
-
-	_init_colors.call_deferred()
+	reticle.visible = false
+		
+	
+	_setup_trails()
+	
 
 func _init_colors():
-	print(player_data)
-	global_position = player_data.get("spawn_position", Vector2.ZERO)
-	target_position = player_data.get("spawn_position", Vector2.ZERO)
-	color = player_data.get("color", Color.BLACK)
-	is_initialized = true
-	print("Player data found - position: %s, color: %s" % [global_position, color])
+	$Sprite2D.modulate = player_data.color
+	$Reticle.modulate = player_data.color
 	
-	_setup_dash_dial()
-	_setup_trails()
-	$Sprite2D.modulate = color
-	$Reticle.modulate = color
 
+@rpc("any_peer")
+func init_player(data: Dictionary):
+	print("init author: ", get_multiplayer_authority())
+	player_data = PlayerData.from_dict(data)
+	_init_colors()
+	global_position = player_data.spawn_position
+	target_position = player_data.spawn_position
+	
+@rpc("any_peer")
+func init_authority_vars():
+	reticle.visible = true
+	reticle.modulate.a = 0.5
+	emit_signal("hp_changed", current_hp)
+	_setup_dash_dial()
+	print("SETUP AUTHORITY-VARS IN PLAYER ")
+	
 
 func _setup_trails():
 	trails["dash"] = TrailData.new(dash_trail, 15, dash_trail_fade_duration)

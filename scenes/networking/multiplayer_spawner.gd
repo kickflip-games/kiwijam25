@@ -1,7 +1,7 @@
 extends MultiplayerSpawner
 @export var network_player: PackedScene
 var spawned_players: Dictionary = {}
-
+var spawned_data: Dictionary = {}
 
 func _ready() -> void:
 	# Connect signals first
@@ -21,27 +21,35 @@ func spawn_player(id: int) -> void:
 		return
 	
 	var player: Node = network_player.instantiate()
-	player.name = str(id)
 	var spawn_index = spawned_players.size() % 4
+	var pdata = PlayerData.new(spawn_index)
+	player.name = str(id)
 	
-	# Create PlayerData
-	var pdata = PlayerData.new(id)
-	
-	print("🎮 Creating player %d with position: %s, color: %s" % [id, pdata.spawn_position, pdata.color])
-	
-	
+	print("🎮 Creating player %d with position: %s, color: %s" % [spawn_index, pdata.spawn_position, pdata.color])
 	# Add to scene
 	var parent: Node = get_node(spawn_path)
-	parent.add_child(player, true)  # Force readable name
+	parent.add_child(player, true) 
 	
-	# Set authority after the node is in the scene tree
-	call_deferred("set_player_authority", player, id)
-	
-	# Track spawned players
 	spawned_players[id] = player
-	player.position = pdata.spawn_position
+	spawned_data[id] = pdata
+	
+	# INIT this player's data on their own client
+	player.rpc_id(id, "init_player", pdata.to_dict())
+	
+	# Tell all *other* clients about this new player
+	for peer_id in spawned_players:
+		if peer_id != id:
+			player.rpc_id(peer_id, "init_player", pdata.to_dict())
 	
 	print("✅ Spawned player %d at %s" % [id, player.global_position])
+	print("COLLECTED DATA: ", spawned_data)
+	
+	set_player_authority(player, id)
+	player.rpc_id(id, "init_authority_vars")
+	
+	
+	
+	
 
 func set_player_authority(player: Node, id: int) -> void:
 	player.set_multiplayer_authority(id)

@@ -11,15 +11,15 @@ extends Resource
 
 @export var spawn_positions = [
 	Vector2(100, 500),
-	Vector2(-100, 500),
-	Vector2(100, 500),
-	Vector2(-100, 100)
+	Vector2(200, 500),
+	Vector2(100, 100),
+	Vector2(200, 100)
 ]
 @export var spawn_colors = [
 	Color(0.13, 0.941, 0.99, 1.0),
 	Color(0.367, 0.685, 0.128, 1.0),
-	Color(0.435, 0.845, 0.949, 1.0),  # Fixed: was > 1.0 values
-	Color(0.354, 0.906, 0.467, 1.0),  # Fixed: was > 1.0 values
+	Color(0.758, 0.081, 0.28, 1.0),  
+	Color(0.822, 0.633, 0.233, 1.0), 
 ]
 
 
