@@ -62,7 +62,7 @@ func set_color(c: Color) -> void:
 func find_target() -> void:
 	var players = get_tree().get_nodes_in_group("player")
 	for p in players:
-		if p != spawner:
+		if p != spawner and not p.is_dead:
 			target = p
 			return
 	# no players → clear all missiles

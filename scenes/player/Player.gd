@@ -476,6 +476,8 @@ func die():
 	is_dead = true
 
 	# disable collisions & input
+	movement_particles.visible = false
+	movement_trail.visible = false
 	collision_area.monitoring = false
 	reticle.visible = false
 
@@ -485,8 +487,7 @@ func die():
 	death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
 	death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	await death_tween.finished
-	movement_particles.visible = false
-	movement_trail.visible = false
+
 	# stay timed out
 	await get_tree().create_timer(death_timeout_duration).timeout
 
@@ -497,6 +498,8 @@ func die():
 	if is_multiplayer_authority():
 		reticle.visible = true
 		reticle.modulate.a = 0.5
+	movement_trail.visible = true
+	
 	is_dead = false
 
 
