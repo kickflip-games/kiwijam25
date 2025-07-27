@@ -174,8 +174,12 @@ scale = Vector2(0.99999994, 0.99999994)
 [node name="PlayerUi" parent="CanvasLayer" instance=ExtResource("7_npwbq")]
 
 [node name="TimeoutLabel" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = -13.0
+offset_top = -12.0
+offset_right = 18.0
+offset_bottom = 11.0
+theme_override_colors/font_color = Color(1, 0.050980397, 0.07058822, 1)
+text = "10"
 
 [connection signal="finger_dash" from="finger_tracker" to="." method="_on_finger_tracker_finger_dash"]
 [connection signal="finger_shoot" from="finger_tracker" to="." method="_on_finger_tracker_finger_shoot"]
