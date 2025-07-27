@@ -1,0 +1,63 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmjd66yg1sv1a"]
+
+[ext_resource type="Script" uid="uid://dvaxmjtecdihm" path="res://scenes/player/player_ui.gd" id="1_fatww"]
+[ext_resource type="Texture2D" uid="uid://blmdh84m208op" path="res://assets/textures/heart/heart_full.png" id="2_mo8vb"]
+[ext_resource type="Texture2D" uid="uid://48kbqnmj1mpn" path="res://assets/textures/heart/heart_empty.png" id="3_nlx67"]
+
+[sub_resource type="Theme" id="Theme_npwbq"]
+
+[node name="PlayerUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fatww")
+heart_full_texture = ExtResource("2_mo8vb")
+heart_empty_texture = ExtResource("3_nlx67")
+
+[node name="Hearts" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -128.5
+offset_right = 128.5
+offset_bottom = 38.03
+grow_horizontal = 2
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Hearts"]
+layout_mode = 2
+texture = ExtResource("2_mo8vb")
+expand_mode = 2
+flip_h = true
+
+[node name="TextureRect2" type="TextureRect" parent="Hearts"]
+layout_mode = 2
+texture = ExtResource("2_mo8vb")
+expand_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="Hearts"]
+layout_mode = 2
+texture = ExtResource("2_mo8vb")
+expand_mode = 2
+
+[node name="ScoreLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -73.0
+offset_top = -61.0
+offset_right = 73.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = SubResource("Theme_npwbq")
+theme_override_font_sizes/normal_font_size = 40
+text = "000"
+horizontal_alignment = 1
+vertical_alignment = 1

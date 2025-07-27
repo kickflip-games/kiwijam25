@@ -1,6 +1,6 @@
 extends Control
+class_name PlayerUI
 
-@export var player: Node
 @export var heart_full_texture: Texture2D
 @export var heart_empty_texture: Texture2D
 
@@ -16,38 +16,34 @@ var original_color: Color
 
 
 
-func _ready():
-	if not is_multiplayer_authority():
-		queue_free()
-		return  
-	
-	player.connect("hp_changed", _on_hp_changed)
-	player.connect("score_changed", _on_score_changed)
-	
+
+func _ready():	
 	original_scale = score_label.scale
 	original_color = score_label.modulate
 	
 	_on_score_changed(0)
-	_on_hp_changed(player.current_hp)  # initialize
+	_on_hp_changed(3)  # initialize
 
 
 func _on_hp_changed(current_hp: int):
+	print("change hp UI: ", current_hp)
 	for i in range(hearts.get_child_count()):
 		var heart = hearts.get_child(i)
 		var target_texture = heart_full_texture if i < current_hp else heart_empty_texture
 
-		#if heart.texture != target_texture:
-			#var original_scale = heart.scale
+		if heart.texture != target_texture:
+			var original_scale = heart.scale
 			#heart_tween.kill()  # kill previous heart_tween to avoid overlap
 			#heart_tween = create_tween()
-			#heart.texture = target_texture
-			#heart.scale = Vector2(1.5, 1.5)
+			heart.texture = target_texture
+			heart.scale = Vector2(1.5, 1.5)
 			#heart_tween.heart_tween_property(heart, "scale", original_scale, 3).set_trans(heart_tween.TRANS_BOUNCE)
-		#else:
-			#heart.texture = target_texture
+		else:
+			heart.texture = target_texture
 
 
 func _on_score_changed(current_score: int):
+	print("change score UI ", current_score)
 
 	# Format to 000 (e.g., 007)
 	score_label.text = "%03d" % current_score

@@ -83,6 +83,8 @@ var trails: Dictionary = {}
 @onready var dash_dial: Line2D = $DashDial
 @onready var dash_dial_bg: Line2D = $DashDialBG
 
+@onready var player_ui:PlayerUI = $CanvasLayer/PlayerUi
+
 
 
 
@@ -122,8 +124,11 @@ func _ready():
 		reticle.visible = true
 		reticle.modulate.a = 0.5
 		emit_signal("hp_changed", current_hp)
+		hp_changed.connect(player_ui._on_hp_changed)
+		score_changed.connect(player_ui._on_score_changed)
 	else:
 		reticle.visible = false
+		player_ui.queue_free()
 
 	_init_colors.call_deferred()
 
