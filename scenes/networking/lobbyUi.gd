@@ -7,7 +7,7 @@ extends Control
 @onready var join_button = $VBoxContainer/HBoxContainer/JoinButton
 @onready var start_game_button = $VBoxContainer/StartGameButton
 @onready var player_list = $PlayerList
-@onready var status_label = $VBoxContainer/StatusLabel
+@onready var status_label = $StatusLabel
 
 # Player data
 var connected_players: Dictionary = {}
@@ -68,6 +68,7 @@ func _on_join_button_pressed():
 func _on_start_game_button_pressed():
 	if is_host and connected_players.size() >= 2:
 		_start_game.rpc()
+		$VBoxContainer.visible = false
 
 # Network event handlers from NetworkHandler signals
 func _on_server_started(success: bool):
@@ -75,7 +76,10 @@ func _on_server_started(success: bool):
 		is_host = true
 		_add_local_player()
 		_update_ui_for_host()
-		_update_status("🎮 Server started! Waiting for players...", Color.GREEN)
+		_update_status("🎮 Server started!", Color.GREEN)
+		$VBoxContainer.visible = false
+		status_label.visible = true
+		
 	else:
 		_update_status("❌ Failed to start server", Color.RED)
 
@@ -84,7 +88,7 @@ func _on_client_connected(success: bool):
 		is_host = false
 		_add_local_player()
 		_update_ui_for_client()
-		_update_status("✅ Connected! Waiting for game to start...", Color.GREEN)
+		_update_status("✅ Connected!", Color.GREEN)
 		
 		# Send player info to host
 		var local_name = "Player_" + str(NetworkHandler.get_unique_id())
@@ -138,11 +142,18 @@ func _update_ui_for_host():
 	join_button.visible = false
 	start_game_button.visible = true
 	ip_entry.editable = false
+	status_label.visible = true
+	player_list.visible = false
+	$VBoxContainer.visible = false
 
 func _update_ui_for_client():
 	server_button.visible = false
 	join_button.visible = false
 	ip_entry.editable = false
+	status_label.visible = true
+	player_list.visible = false
+	
+	$VBoxContainer.visible = false
 
 func _reset_lobby():
 	# Reset to initial state

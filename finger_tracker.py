@@ -253,7 +253,7 @@ class SimpleFingerTracker:
         if not cap.isOpened():
             print("Error: Could not open camera")
             return
-        
+
         print("Starting finger tracking...")
         print("Show your RIGHT HAND to the camera")
         print("Press 'q' to quit, 'v' to toggle visualization, 'r' to reconnect")
