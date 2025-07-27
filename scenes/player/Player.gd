@@ -208,7 +208,7 @@ func _update_velocity_history():
 
 func _input(event):
 	
-	if !is_multiplayer_authority() or is_hit_paused:
+	if not is_multiplayer_authority() or is_hit_paused or is_dead:
 		return
 	
 	if event.is_action_pressed("dash") and can_dash():
@@ -431,7 +431,7 @@ func _get_dash_percent_ready() -> float:
 # --- Enhanced Collision & Damage ---
 func _on_body_entered(body: Node2D):
 	print("Body entered: ", body.name)
-	if is_dashing or is_invincible:
+	if is_dashing or is_invincible or is_dead:
 		return
 	
 	trigger_hit_pause()
@@ -460,16 +460,51 @@ func become_invincible():
 	is_invincible = false
 	print("Player is no longer invincible.")
 
+
+#func die():
+	#print("Player has died")
+	#player_died.emit()
+	#
+	#var death_tween = create_tween()
+	#death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
+	#death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
+	#await death_tween.finished
+	#
+	#queue_free()
+
+@export var death_timeout_duration: float = 10.0  # seconds to stay timed out
+var is_dead: bool = false
+
 func die():
-	print("Player has died")
+	print("Player has timed out")
 	player_died.emit()
-	
+	is_dead = true
+
+	# disable collisions & input
+	collision_area.monitoring = false
+	reticle.visible = false
+
+
+	# fade-out effect
 	var death_tween = create_tween()
-	death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	death_tween.parallel().tween_property(sprite, "modulate", Color.TRANSPARENT, 0.5)
+	death_tween.parallel().tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	await death_tween.finished
-	
-	queue_free()
+	movement_particles.visible = false
+	movement_trail.visible = false
+	# stay timed out
+	await get_tree().create_timer(death_timeout_duration).timeout
+
+	# revive
+	sprite.modulate = Color(1, 1, 1, 1)
+	sprite.scale = Vector2.ONE
+	collision_area.monitoring = true
+	if is_multiplayer_authority():
+		reticle.visible = true
+		reticle.modulate.a = 0.5
+	is_dead = false
+
+
 
 
 func increase_score():
