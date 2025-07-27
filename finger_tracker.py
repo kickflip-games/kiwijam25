@@ -146,7 +146,7 @@ class SimpleFingerTracker:
                     # Detect fast movement
                     if hasattr(self, 'last_finger_pos') and self.last_finger_pos is not None:
                         dist = euclidean_distance(finger_data, self.last_finger_pos)
-                        if dist > 0.15:  # tweak this threshold as needed
+                        if dist > 0.1:  # tweak this threshold as needed
                             finger_data['fast'] = True
 
                     self.last_finger_pos = finger_data
